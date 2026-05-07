@@ -31,16 +31,16 @@ enum Role: string
 
     public function isAdmin(): bool
     {
-        return $this === Role::AdminTU;
+        return $this === Role::Admin;
     }
 
-    public function isKepala(): bool
+    public function isPimpinan(): bool
     {
-        return $this === Role::KepalaSekolah;
+        return $this === Role::Pimpinan;
     }
 
-    public function isPegawai(): bool
+    public function isPenumpang(): bool
     {
-        return in_array($this, [Role::Guru, Role::Staff]);
+        return $this === Role::Penumpang;
     }
 }

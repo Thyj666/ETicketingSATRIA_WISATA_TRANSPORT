@@ -1,0 +1,16 @@
+Options -Indexes
+
+RewriteEngine On
+
+# Redirect to HTTPS (aktifkan jika server pakai SSL)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Jangan redirect file/folder yang memang ada secara fisik
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Handle requests to subdirectories properly
+RewriteCond %{REQUEST_URI} !^/[\w-]+/index\.php$
+# Semua request diarahkan ke index.php di direktori yang sesuai
+RewriteRule ^(.*)$ index.php [QSA,L]

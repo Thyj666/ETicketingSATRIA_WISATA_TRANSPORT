@@ -146,20 +146,6 @@ $routes = [
     // Dashboard
     'GET:/dashboard'                  => ['DashboardController', 'index'],
 
-    // Jabatan
-    'GET:/master/jabatan'             => ['JabatanController', 'index'],
-    'POST:/master/jabatan/create'     => ['JabatanController', 'create'],
-    'POST:/master/jabatan/update'     => ['JabatanController', 'update'],
-    'POST:/master/jabatan/delete'     => ['JabatanController', 'delete'],
-    'GET:/master/jabatan/get'         => ['JabatanController', 'getById'],
-
-    // Golongan
-    'GET:/master/golongan'            => ['GolonganController', 'index'],
-    'POST:/master/golongan/create'    => ['GolonganController', 'create'],
-    'POST:/master/golongan/update'    => ['GolonganController', 'update'],
-    'POST:/master/golongan/delete'    => ['GolonganController', 'delete'],
-    'GET:/master/golongan/get'        => ['GolonganController', 'getById'],
-
     // User
     'GET:/master/user'                => ['UserController', 'index'],
     'POST:/master/user/create'        => ['UserController', 'create'],
@@ -167,30 +153,33 @@ $routes = [
     'POST:/master/user/delete'        => ['UserController', 'delete'],
     'GET:/master/user/get'            => ['UserController', 'getById'],
 
-    // Absensi
-    'GET:/transaksi/absensi'               => ['AbsensiController', 'index'],
-    'POST:/transaksi/absensi/create'       => ['AbsensiController', 'create'],
-    'POST:/transaksi/absensi/create-bulk'  => ['AbsensiController', 'createBulk'],
-    'POST:/transaksi/absensi/update'       => ['AbsensiController', 'update'],
-    'POST:/transaksi/absensi/delete'       => ['AbsensiController', 'delete'],
-    'GET:/transaksi/absensi/get'           => ['AbsensiController', 'getById'],
-    'GET:/transaksi/absensi/status-hari'   => ['AbsensiController', 'statusHari'],
-
-    // Penggajian
-    'GET:/transaksi/penggajian'                    => ['PenggajianController', 'index'],
-    'POST:/transaksi/penggajian/create'            => ['PenggajianController', 'create'],
-    'POST:/transaksi/penggajian/create-bulk'       => ['PenggajianController', 'createBulk'],
-    'POST:/transaksi/penggajian/update'            => ['PenggajianController', 'update'],
-    'POST:/transaksi/penggajian/delete'            => ['PenggajianController', 'delete'],
-    'GET:/transaksi/penggajian/get'                => ['PenggajianController', 'getById'],
-    'GET:/transaksi/penggajian/slip'               => ['PenggajianController', 'slipGaji'],
-    'GET:/transaksi/penggajian/getUserData'        => ['PenggajianController', 'getUserData'],
-    'GET:/transaksi/penggajian/status-periode'     => ['PenggajianController', 'statusPeriode'],
-
     // Laporan
     'GET:/transaksi/laporan'             => ['LaporanController', 'index'],
     'GET:/transaksi/laporan/export'      => ['LaporanController', 'export'],
     'GET:/transaksi/laporan/absensi'     => ['LaporanController', 'absensi'],
+
+    // Armada
+    'GET:/master/armada'              => ['ArmadaController', 'index'],
+    'POST:/master/armada/create'      => ['ArmadaController', 'create'],
+    'POST:/master/armada/update'      => ['ArmadaController', 'update'],
+    'POST:/master/armada/delete'      => ['ArmadaController', 'delete'],
+    'GET:/master/armada/get'          => ['ArmadaController', 'getById'],
+
+
+    // Tiket
+    'GET:/transaksi/tiket'                 => ['TiketController', 'index'],
+    'POST:/transaksi/tiket/create'         => ['TiketController', 'create'],
+    'POST:/transaksi/tiket/update'         => ['TiketController', 'update'],
+    'POST:/transaksi/tiket/delete'         => ['TiketController', 'delete'],
+    'GET:/transaksi/tiket/get'             => ['TiketController', 'getById'],
+    'GET:/transaksi/tiket/seats'           => ['TiketController', 'getSeats'],
+
+    // Pemesanan
+    'GET:/transaksi/pemesanan'             => ['PemesananController', 'index'],
+    'POST:/transaksi/pemesanan/create'     => ['PemesananController', 'create'],
+    'GET:/transaksi/pemesanan/bayar'       => ['PemesananController', 'bayar'],
+    'POST:/transaksi/pemesanan/notifikasi' => ['PemesananController', 'notifikasi'],
+    'GET:/transaksi/pemesanan/status'      => ['PemesananController', 'statusPembayaran'],
 
     // Profile
     'GET:/profile'                    => ['ProfileController', 'index'],
@@ -244,13 +233,12 @@ if (!$routeMatch) {
 $controllerMap = [
     'AuthController'       => \WebApi\AuthController::class,
     'DashboardController'  => \WebApi\DashboardController::class,
-    'JabatanController'    => \WebApi\Master\Jabatan\JabatanController::class,
-    'GolonganController'   => \WebApi\Master\Golongan\GolonganController::class,
     'UserController'       => \WebApi\Master\User\UserController::class,
-    'AbsensiController'    => \WebApi\Transaction\Absensi\AbsensiController::class,
-    'PenggajianController' => \WebApi\Transaction\Penggajian\PenggajianController::class,
     'LaporanController'    => \WebApi\Transaction\Laporan\LaporanController::class,
     'ProfileController'    => \WebApi\ProfileController::class,
+    'ArmadaController'     => \WebApi\Master\Armada\ArmadaController::class,
+    'TiketController'      => \WebApi\Transaction\Tiket\TiketController::class,
+    'PemesananController'  => \WebApi\Transaction\Pemesanan\PemesananController::class,
 ];
 
 $className = $controllerMap[$controllerName] ?? null;

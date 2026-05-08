@@ -146,6 +146,31 @@ $routes = [
     // Dashboard
     'GET:/dashboard'                  => ['DashboardController', 'index'],
 
+    // Admin
+    'GET:/master/admin'               => ['AdminController', 'index'],
+    'POST:/master/admin/create'       => ['AdminController', 'create'],
+    'POST:/master/admin/update'       => ['AdminController', 'update'],
+    'POST:/master/admin/delete'       => ['AdminController', 'delete'],
+    'GET:/master/admin/get'           => ['AdminController', 'getById'],
+
+    // Pelanggan
+    'GET:/master/pelanggan'           => ['PelangganController', 'index'],
+    'POST:/master/pelanggan/create'   => ['PelangganController', 'create'],
+    'POST:/master/pelanggan/update'   => ['PelangganController', 'update'],
+    'POST:/master/pelanggan/delete'   => ['PelangganController', 'delete'],
+    'GET:/master/pelanggan/get'       => ['PelangganController', 'getById'],
+
+    // Pimpinan
+    'GET:/master/pimpinan'            => ['PimpinanController', 'index'],
+    'POST:/master/pimpinan/create'    => ['PimpinanController', 'create'],
+    'POST:/master/pimpinan/update'    => ['PimpinanController', 'update'],
+    'POST:/master/pimpinan/delete'    => ['PimpinanController', 'delete'],
+    'GET:/master/pimpinan/get'        => ['PimpinanController', 'getById'],
+
+    // Register
+    'GET:/register'                   => ['AuthController', 'registerPage'],
+    'POST:/register'                  => ['AuthController', 'register'],
+
     // User
     'GET:/master/user'                => ['UserController', 'index'],
     'POST:/master/user/create'        => ['UserController', 'create'],
@@ -236,6 +261,9 @@ $controllerMap = [
     'UserController'       => \WebApi\Master\User\UserController::class,
     'LaporanController'    => \WebApi\Transaction\Laporan\LaporanController::class,
     'ProfileController'    => \WebApi\ProfileController::class,
+    'AdminController'      => \WebApi\Master\Admin\AdminController::class,
+    'PelangganController'  => \WebApi\Master\Pelanggan\PelangganController::class,
+    'PimpinanController'   => \WebApi\Master\Pimpinan\PimpinanController::class,
     'ArmadaController'     => \WebApi\Master\Armada\ArmadaController::class,
     'TiketController'      => \WebApi\Transaction\Tiket\TiketController::class,
     'PemesananController'  => \WebApi\Transaction\Pemesanan\PemesananController::class,

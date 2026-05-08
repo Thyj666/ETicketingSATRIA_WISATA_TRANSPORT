@@ -33,6 +33,27 @@ class DependencyInjection
             BASE_PATH . '/07Client/Transaction/Tiket/TiketService.php',
             BASE_PATH . '/07Client/Transaction/Pemesanan/PemesananService.php',
             BASE_PATH . '/07Client/Transaction/Laporan/LaporanService.php',
+            BASE_PATH . '/07Client/Master/Admin/AdminService.php',
+            BASE_PATH . '/07Client/Master/Pelanggan/PelangganService.php',
+            BASE_PATH . '/07Client/Master/Pimpinan/PimpinanService.php',
+            // Application - Admin
+            BASE_PATH . '/04Application/Master/Admin/Commands/Create/CreateAdminCommand.php',
+            BASE_PATH . '/04Application/Master/Admin/Commands/Update/UpdateAdminCommand.php',
+            BASE_PATH . '/04Application/Master/Admin/Commands/Delete/DeleteAdminCommand.php',
+            BASE_PATH . '/04Application/Master/Admin/Queries/GetAdminByListQuery.php',
+            BASE_PATH . '/04Application/Master/Admin/Queries/GetAdminByIdQuery.php',
+            // Application - Pelanggan
+            BASE_PATH . '/04Application/Master/Pelanggan/Commands/Create/CreatePelangganCommand.php',
+            BASE_PATH . '/04Application/Master/Pelanggan/Commands/Update/UpdatePelangganCommand.php',
+            BASE_PATH . '/04Application/Master/Pelanggan/Commands/Delete/DeletePelangganCommand.php',
+            BASE_PATH . '/04Application/Master/Pelanggan/Queries/GetPelangganByListQuery.php',
+            BASE_PATH . '/04Application/Master/Pelanggan/Queries/GetPelangganByIdQuery.php',
+            // Application - Pimpinan
+            BASE_PATH . '/04Application/Master/Pimpinan/Commands/Create/CreatePimpinanCommand.php',
+            BASE_PATH . '/04Application/Master/Pimpinan/Commands/Update/UpdatePimpinanCommand.php',
+            BASE_PATH . '/04Application/Master/Pimpinan/Commands/Delete/DeletePimpinanCommand.php',
+            BASE_PATH . '/04Application/Master/Pimpinan/Queries/GetPimpinanByListQuery.php',
+            BASE_PATH . '/04Application/Master/Pimpinan/Queries/GetPimpinanByIdQuery.php',
             // Application - User
             BASE_PATH . '/04Application/Master/User/Commands/Create/CreateUserCommand.php',
             BASE_PATH . '/04Application/Master/User/Commands/Update/UpdateUserCommand.php',
@@ -61,6 +82,9 @@ class DependencyInjection
             BASE_PATH . '/06WebApi/AuthController.php',
             BASE_PATH . '/06WebApi/DashboardController.php',
             BASE_PATH . '/06WebApi/ProfileController.php',
+            BASE_PATH . '/06WebApi/Master/Admin/AdminController.php',
+            BASE_PATH . '/06WebApi/Master/Pelanggan/PelangganController.php',
+            BASE_PATH . '/06WebApi/Master/Pimpinan/PimpinanController.php',
             BASE_PATH . '/06WebApi/Master/Armada/ArmadaController.php',
             BASE_PATH . '/06WebApi/Master/User/UserController.php',
             BASE_PATH . '/06WebApi/Transaction/Tiket/TiketController.php',
@@ -92,6 +116,136 @@ class DependencyInjection
         $this->bind(
             \Client\Transaction\Laporan\LaporanService::class,
             fn() => new \Client\Transaction\Laporan\LaporanService($db)
+        );
+
+        // Role services
+        $this->bind(
+            \Client\Master\Admin\AdminService::class,
+            fn() => new \Client\Master\Admin\AdminService($db)
+        );
+        $this->bind(
+            \Client\Master\Pelanggan\PelangganService::class,
+            fn() => new \Client\Master\Pelanggan\PelangganService($db)
+        );
+        $this->bind(
+            \Client\Master\Pimpinan\PimpinanService::class,
+            fn() => new \Client\Master\Pimpinan\PimpinanService($db)
+        );
+
+        // Admin Commands
+        $this->bind(
+            \Application\Master\Admin\Commands\Create\CreateAdminCommand::class,
+            fn() => new \Application\Master\Admin\Commands\Create\CreateAdminCommand(
+                $this->make(\Client\Master\Admin\AdminService::class),
+                $this->make(\Client\Master\User\UserService::class)
+            )
+        );
+        $this->bind(
+            \Application\Master\Admin\Commands\Update\UpdateAdminCommand::class,
+            fn() => new \Application\Master\Admin\Commands\Update\UpdateAdminCommand(
+                $this->make(\Client\Master\Admin\AdminService::class),
+                $this->make(\Client\Master\User\UserService::class)
+            )
+        );
+        $this->bind(
+            \Application\Master\Admin\Commands\Delete\DeleteAdminCommand::class,
+            fn() => new \Application\Master\Admin\Commands\Delete\DeleteAdminCommand($this->make(\Client\Master\Admin\AdminService::class))
+        );
+        $this->bind(
+            \Application\Master\Admin\Queries\GetAdminByListQuery::class,
+            fn() => new \Application\Master\Admin\Queries\GetAdminByListQuery($this->make(\Client\Master\Admin\AdminService::class))
+        );
+        $this->bind(
+            \Application\Master\Admin\Queries\GetAdminByIdQuery::class,
+            fn() => new \Application\Master\Admin\Queries\GetAdminByIdQuery($this->make(\Client\Master\Admin\AdminService::class))
+        );
+
+        // Pelanggan Commands
+        $this->bind(
+            \Application\Master\Pelanggan\Commands\Create\CreatePelangganCommand::class,
+            fn() => new \Application\Master\Pelanggan\Commands\Create\CreatePelangganCommand(
+                $this->make(\Client\Master\Pelanggan\PelangganService::class),
+                $this->make(\Client\Master\User\UserService::class)
+            )
+        );
+        $this->bind(
+            \Application\Master\Pelanggan\Commands\Update\UpdatePelangganCommand::class,
+            fn() => new \Application\Master\Pelanggan\Commands\Update\UpdatePelangganCommand(
+                $this->make(\Client\Master\Pelanggan\PelangganService::class),
+                $this->make(\Client\Master\User\UserService::class)
+            )
+        );
+        $this->bind(
+            \Application\Master\Pelanggan\Commands\Delete\DeletePelangganCommand::class,
+            fn() => new \Application\Master\Pelanggan\Commands\Delete\DeletePelangganCommand($this->make(\Client\Master\Pelanggan\PelangganService::class))
+        );
+        $this->bind(
+            \Application\Master\Pelanggan\Queries\GetPelangganByListQuery::class,
+            fn() => new \Application\Master\Pelanggan\Queries\GetPelangganByListQuery($this->make(\Client\Master\Pelanggan\PelangganService::class))
+        );
+        $this->bind(
+            \Application\Master\Pelanggan\Queries\GetPelangganByIdQuery::class,
+            fn() => new \Application\Master\Pelanggan\Queries\GetPelangganByIdQuery($this->make(\Client\Master\Pelanggan\PelangganService::class))
+        );
+
+        // Pimpinan Commands
+        $this->bind(
+            \Application\Master\Pimpinan\Commands\Create\CreatePimpinanCommand::class,
+            fn() => new \Application\Master\Pimpinan\Commands\Create\CreatePimpinanCommand(
+                $this->make(\Client\Master\Pimpinan\PimpinanService::class),
+                $this->make(\Client\Master\User\UserService::class)
+            )
+        );
+        $this->bind(
+            \Application\Master\Pimpinan\Commands\Update\UpdatePimpinanCommand::class,
+            fn() => new \Application\Master\Pimpinan\Commands\Update\UpdatePimpinanCommand(
+                $this->make(\Client\Master\Pimpinan\PimpinanService::class),
+                $this->make(\Client\Master\User\UserService::class)
+            )
+        );
+        $this->bind(
+            \Application\Master\Pimpinan\Commands\Delete\DeletePimpinanCommand::class,
+            fn() => new \Application\Master\Pimpinan\Commands\Delete\DeletePimpinanCommand($this->make(\Client\Master\Pimpinan\PimpinanService::class))
+        );
+        $this->bind(
+            \Application\Master\Pimpinan\Queries\GetPimpinanByListQuery::class,
+            fn() => new \Application\Master\Pimpinan\Queries\GetPimpinanByListQuery($this->make(\Client\Master\Pimpinan\PimpinanService::class))
+        );
+        $this->bind(
+            \Application\Master\Pimpinan\Queries\GetPimpinanByIdQuery::class,
+            fn() => new \Application\Master\Pimpinan\Queries\GetPimpinanByIdQuery($this->make(\Client\Master\Pimpinan\PimpinanService::class))
+        );
+
+        // Role Controllers
+        $this->bind(
+            \WebApi\Master\Admin\AdminController::class,
+            fn() => new \WebApi\Master\Admin\AdminController(
+                $this->make(\Application\Master\Admin\Commands\Create\CreateAdminCommand::class),
+                $this->make(\Application\Master\Admin\Commands\Update\UpdateAdminCommand::class),
+                $this->make(\Application\Master\Admin\Commands\Delete\DeleteAdminCommand::class),
+                $this->make(\Application\Master\Admin\Queries\GetAdminByListQuery::class),
+                $this->make(\Application\Master\Admin\Queries\GetAdminByIdQuery::class),
+            )
+        );
+        $this->bind(
+            \WebApi\Master\Pelanggan\PelangganController::class,
+            fn() => new \WebApi\Master\Pelanggan\PelangganController(
+                $this->make(\Application\Master\Pelanggan\Commands\Create\CreatePelangganCommand::class),
+                $this->make(\Application\Master\Pelanggan\Commands\Update\UpdatePelangganCommand::class),
+                $this->make(\Application\Master\Pelanggan\Commands\Delete\DeletePelangganCommand::class),
+                $this->make(\Application\Master\Pelanggan\Queries\GetPelangganByListQuery::class),
+                $this->make(\Application\Master\Pelanggan\Queries\GetPelangganByIdQuery::class),
+            )
+        );
+        $this->bind(
+            \WebApi\Master\Pimpinan\PimpinanController::class,
+            fn() => new \WebApi\Master\Pimpinan\PimpinanController(
+                $this->make(\Application\Master\Pimpinan\Commands\Create\CreatePimpinanCommand::class),
+                $this->make(\Application\Master\Pimpinan\Commands\Update\UpdatePimpinanCommand::class),
+                $this->make(\Application\Master\Pimpinan\Commands\Delete\DeletePimpinanCommand::class),
+                $this->make(\Application\Master\Pimpinan\Queries\GetPimpinanByListQuery::class),
+                $this->make(\Application\Master\Pimpinan\Queries\GetPimpinanByIdQuery::class),
+            )
         );
 
         // User Commands & Queries
@@ -199,10 +353,11 @@ class DependencyInjection
         $this->bind(
             \WebApi\ProfileController::class,
             fn() => new \WebApi\ProfileController(
-                $this->make(\Application\Master\User\Commands\Update\UpdateUserCommand::class),
-                $this->make(\Application\Master\User\Queries\GetUserByIdQuery::class)
-            )
-        );
+                $this->make(\Client\Master\User\UserService::class),
+                $this->make(\Client\Master\Admin\AdminService::class),
+                $this->make(\Client\Master\Pelanggan\PelangganService::class),
+                $this->make(\Client\Master\Pimpinan\PimpinanService::class),
+            );
         $this->bind(
             \WebApi\Master\Armada\ArmadaController::class,
             fn() => new \WebApi\Master\Armada\ArmadaController(

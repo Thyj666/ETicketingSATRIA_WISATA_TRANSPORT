@@ -6,16 +6,16 @@ namespace Base\User\Enums;
 
 enum Role: string
 {
-    case Penumpang = 'penumapang';
-    case Admin = 'admin';
-    case Pimpinan = 'pimpinan';
+    case Pelanggan = 'pelanggan';
+    case Admin     = 'admin';
+    case Pimpinan  = 'pimpinan';
 
     public function label(): string
     {
         return match ($this) {
-            Role::Admin => 'Admin',
-            Role::Pimpinan => 'Pimpinan',
-            Role::Penumpang => 'Penumpang',
+            Role::Admin     => 'Admin',
+            Role::Pimpinan  => 'Pimpinan',
+            Role::Pelanggan => 'Pelanggan',
         };
     }
 
@@ -33,14 +33,12 @@ enum Role: string
     {
         return $this === Role::Admin;
     }
-
     public function isPimpinan(): bool
     {
         return $this === Role::Pimpinan;
     }
-
-    public function isPenumpang(): bool
+    public function isPelanggan(): bool
     {
-        return $this === Role::Penumpang;
+        return $this === Role::Pelanggan;
     }
 }

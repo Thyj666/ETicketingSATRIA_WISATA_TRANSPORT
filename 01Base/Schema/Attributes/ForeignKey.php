@@ -7,10 +7,6 @@ namespace Base\Schema\Attributes;
 /**
  * Mendefinisikan Foreign Key pada sebuah property Entity.
  *
- * Contoh:
- *   #[Column(type: 'int', unsigned: true, nullable: true)]
- *   #[ForeignKey(references: 'jabatan', on: 'id', onDelete: 'SET NULL')]
- *   private ?int $jabatanId = null;
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class ForeignKey

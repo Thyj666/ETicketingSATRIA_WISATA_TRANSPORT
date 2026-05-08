@@ -23,7 +23,6 @@ class Table
          * Bisa berupa nama kolom tunggal atau composite (array of arrays).
          *
          * Contoh:
-         *   indexes: ['jabatan_id']                        → INDEX idx_jabatan_id (jabatan_id)
          *   indexes: [['user_id', 'tanggal']]              → INDEX idx_user_id_tanggal (user_id, tanggal)
          */
         public readonly array $indexes = [],

@@ -113,7 +113,6 @@ class AuthController
             'nama'         => $user->getNama(),
             'username'     => $user->getUsername(),
             'role'         => $user->getRole(),
-            'nama_jabatan' => $user->getNamaJabatan(),
         ]);
 
         $this->redirect('/dashboard');

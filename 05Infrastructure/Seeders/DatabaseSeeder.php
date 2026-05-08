@@ -41,13 +41,11 @@ class DatabaseSeeder
 
     /**
      * Daftar seeder yang akan dijalankan, berurutan.
-     * Golongan → Jabatan → User → (tambahkan lainnya di sini)
      */
     private function seeders(): array
     {
         return [
-            GolonganSeeder::class,
-            JabatanSeeder::class,
+            ArmadaSeeder::class,
             UserSeeder::class,
         ];
     }

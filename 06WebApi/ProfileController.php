@@ -34,18 +34,6 @@ class ProfileController
         $id  = Auth::id();
         $req = new UpdateUserRequest(
             id: $id,
-            nama: trim($_POST['nama'] ?? ''),
-            email: trim($_POST['email'] ?? ''),
-            nip: trim($_POST['nip'] ?? ''),
-            noTelp: trim($_POST['no_telp'] ?? ''),
-            alamat: trim($_POST['alamat'] ?? ''),
-            role: Auth::getRole(),
-            jabatanId: null,
-            gajiPokok: 0,
-            jenisKelamin: $_POST['jenis_kelamin'] ?? 'L',
-            isActive: true,
-            password: $_POST['password_baru'] ?? '',
-            userId: $id,
         );
         $res = $this->updateCommand->execute($req);
         $_SESSION['flash'] = ['type' => $res->success ? 'success' : 'danger', 'msg' => $res->message];

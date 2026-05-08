@@ -294,7 +294,6 @@ class MigrationGenerator
 
     /**
      * Convert camelCase → snake_case
-     * namaJabatan → nama_jabatan
      */
     private function toSnakeCase(string $name): string
     {

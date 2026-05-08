@@ -1,7 +1,5 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Application\Master\User\Commands\Update;
 
 use Shared\Master\User\Commands\Update\UpdateUserRequest;
@@ -15,19 +13,11 @@ class UpdateUserCommand
     {
         $entity = $this->service->getById($req->id);
         if (!$entity) return new UpdateUserResponse(false, 'User tidak ditemukan.');
-        $hashed = $req->password ? password_hash($req->password, PASSWORD_BCRYPT) : '';
+
         $entity->update(
-            $req->nama,
-            $req->email,
-            $req->nip,
-            $req->noTelp,
-            $req->alamat,
-            $req->role,
-            $req->jabatanId,
-            $req->gajiPokok,
-            $req->jenisKelamin,
+            $req->role ?: $entity->getRole(),
             $req->isActive,
-            $hashed,
+            $req->password,
             $req->userId
         );
         $this->service->save($entity);

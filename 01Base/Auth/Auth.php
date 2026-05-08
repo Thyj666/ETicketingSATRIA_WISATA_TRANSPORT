@@ -14,7 +14,6 @@ namespace Base\Auth;
  *   Auth::id()              → ?int
  *   Auth::getName()          → ?string
  *   Auth::getRole()            → ?string
- *   Auth::getJabatan()            → ?string
  *   Auth::requireAuth()     → redirect ke /login jika belum login
  *   Auth::requireRole([])   → 403 jika role tidak sesuai
  */
@@ -63,11 +62,6 @@ class Auth
     public static function getRole(): ?string
     {
         return self::$user['role'] ?? null;
-    }
-
-    public static function getJabatan(): ?string
-    {
-        return self::$user['nama_jabatan'] ?? null;
     }
 
     /**

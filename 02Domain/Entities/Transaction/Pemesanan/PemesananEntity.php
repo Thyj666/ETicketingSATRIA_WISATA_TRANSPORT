@@ -14,21 +14,21 @@ use Base\Schema\Attributes\Table;
 
 #[Table(
     name: 'pemesanans',
-    indexes: ['no_seat', 'tanggal_pemesanan', 'jam_pemesanan', 'status_pemesanan'],
+    indexes: ['no_seat', 'tanggal_pemesanan', 'jam_pemesanan', 'status_pemesanan', 'tiket_id'],
 )]
 class PemesananEntity extends AuditableEntity
 {
-    // ------------------------------------------------------------------
-    // Column
-    // ------------------------------------------------------------------
-
     #[Column(type: 'int', unsigned: true, nullable: false)]
-    #[ForeignKey(references: 'armadas', on: 'id', onDelete: 'CASCADE')]
+    #[ForeignKey(references: 'armada', on: 'id', onDelete: 'CASCADE')]
     private int $armadaId;
 
     #[Column(type: 'int', unsigned: true, nullable: false)]
     #[ForeignKey(references: 'users', on: 'id', onDelete: 'CASCADE')]
     private int $userId;
+
+    #[Column(type: 'int', unsigned: true, nullable: true, default: null)]
+    #[ForeignKey(references: 'tikets', on: 'id', onDelete: 'SET NULL')]
+    private ?int $tiketId = null;
 
     #[Column(type: 'varchar', length: 150, nullable: false)]
     private string $noPemesanan;
@@ -45,9 +45,17 @@ class PemesananEntity extends AuditableEntity
     #[Column(type: 'varchar', length: 150, nullable: false)]
     private ?string $statusPemesanan = null;
 
-    // ------------------------------------------------------------------
-    // Join-fields
-    // ------------------------------------------------------------------
+    #[Column(type: 'decimal', precision: 15, scale: 2, nullable: false, default: 0)]
+    private float $totalHarga = 0;
+
+    #[Column(type: 'varchar', length: 200, nullable: true, default: null)]
+    private ?string $midtransOrderId = null;
+
+    #[Column(type: 'text', nullable: true, default: null)]
+    private ?string $midtransToken = null;
+
+    #[Column(type: 'varchar', length: 50, nullable: true, default: null)]
+    private ?string $midtransStatus = null;
 
     #[Ignore]
     private ?ArmadaEntity $armada = null;
@@ -55,130 +63,148 @@ class PemesananEntity extends AuditableEntity
     #[Ignore]
     private ?UserEntity $user = null;
 
-    // ------------------------------------------------------------------
     // Getters
-    // ------------------------------------------------------------------
-
     public function getArmadaId(): int
     {
         return $this->armadaId;
     }
-
     public function getUserId(): int
     {
         return $this->userId;
     }
-
+    public function getTiketId(): ?int
+    {
+        return $this->tiketId ?? null;
+    }
     public function getNoPemesanan(): string
     {
         return $this->noPemesanan;
     }
-
     public function getNoSeat(): string
     {
         return $this->noSeat;
     }
-
     public function getTanggalPemesanan(): ?string
     {
         return $this->tanggalPemesanan;
     }
-
     public function getJamPemesanan(): ?string
     {
         return $this->jamPemesanan;
     }
-
     public function getStatusPemesanan(): ?string
     {
         return $this->statusPemesanan;
     }
-
+    public function getTotalHarga(): float
+    {
+        return $this->totalHarga ?? 0;
+    }
+    public function getMidtransOrderId(): ?string
+    {
+        return $this->midtransOrderId ?? null;
+    }
+    public function getMidtransToken(): ?string
+    {
+        return $this->midtransToken ?? null;
+    }
+    public function getMidtransStatus(): ?string
+    {
+        return $this->midtransStatus ?? null;
+    }
     public function getArmada(): ?ArmadaEntity
     {
         return $this->armada;
     }
-
     public function getUser(): ?UserEntity
     {
         return $this->user;
     }
 
-    // ------------------------------------------------------------------
     // Setters
-    // ------------------------------------------------------------------
-
     public function setArmadaId(int $v): void
     {
         $this->armadaId = $v;
     }
-
     public function setUserId(int $v): void
     {
         $this->userId = $v;
     }
-
+    public function setTiketId(?int $v): void
+    {
+        $this->tiketId = $v;
+    }
     public function setNoPemesanan(string $v): void
     {
         $this->noPemesanan = $v;
     }
-
     public function setNoSeat(string $v): void
     {
         $this->noSeat = $v;
     }
-
     public function setTanggalPemesanan(?string $v): void
     {
         $this->tanggalPemesanan = $v;
     }
-
     public function setJamPemesanan(?string $v): void
     {
         $this->jamPemesanan = $v;
     }
-
     public function setStatusPemesanan(?string $v): void
     {
         $this->statusPemesanan = $v;
     }
-
+    public function setTotalHarga(float $v): void
+    {
+        $this->totalHarga = $v;
+    }
+    public function setMidtransOrderId(?string $v): void
+    {
+        $this->midtransOrderId = $v;
+    }
+    public function setMidtransToken(?string $v): void
+    {
+        $this->midtransToken = $v;
+    }
+    public function setMidtransStatus(?string $v): void
+    {
+        $this->midtransStatus = $v;
+    }
     public function setArmada(?ArmadaEntity $armada): void
     {
         $this->armada = $armada;
     }
-
     public function setUser(?UserEntity $user): void
     {
         $this->user = $user;
     }
 
-    // ------------------------------------------------------------------
     // Domain methods
-    // ------------------------------------------------------------------
-
     public static function create(
         int $armadaId,
         int $userId,
+        ?int $tiketId,
         string $noPemesanan,
         string $noSeat,
+        float $totalHarga = 0,
         ?string $tanggalPemesanan = null,
         ?string $jamPemesanan = null,
         ?string $statusPemesanan = null,
+        ?string $midtransOrderId = null,
         ?int $createdBy = null
     ): self {
         $entity = new self();
-
         $entity->setArmadaId($armadaId);
         $entity->setUserId($userId);
+        $entity->setTiketId($tiketId);
         $entity->setNoPemesanan($noPemesanan);
         $entity->setNoSeat($noSeat);
+        $entity->setTotalHarga($totalHarga);
         $entity->setTanggalPemesanan($tanggalPemesanan);
         $entity->setJamPemesanan($jamPemesanan);
-        $entity->setStatusPemesanan($statusPemesanan);
-
+        $entity->setStatusPemesanan($statusPemesanan ?? 'pending');
+        $entity->setMidtransOrderId($midtransOrderId);
         $entity->markCreated($createdBy);
-
         return $entity;
     }
 
@@ -191,7 +217,6 @@ class PemesananEntity extends AuditableEntity
         $this->setNoPemesanan($noPemesanan);
         $this->setNoSeat($noSeat);
         $this->setStatusPemesanan($statusPemesanan);
-
         $this->markUpdated($updatedBy);
     }
 }

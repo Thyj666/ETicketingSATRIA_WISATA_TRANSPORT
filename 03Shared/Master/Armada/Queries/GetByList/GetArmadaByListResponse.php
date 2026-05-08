@@ -6,5 +6,9 @@ namespace Shared\Master\Armada\Queries\GetByList;
 
 class GetArmadaByListResponse
 {
-    public function __construct(public readonly array $data) {}
+    public function __construct(
+        public readonly bool $success,
+        public readonly string $message = '',
+        public readonly array $data = [],
+    ) {}
 }

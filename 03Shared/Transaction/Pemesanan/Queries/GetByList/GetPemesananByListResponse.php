@@ -6,5 +6,9 @@ namespace Shared\Transaction\Pemesanan\Queries\GetByList;
 
 class GetPemesananByListResponse
 {
-    public function __construct(public readonly array $data) {}
+    public function __construct(
+        public readonly bool $success,
+        public readonly string $message = '',
+        public readonly array $data = [],
+    ) {}
 }

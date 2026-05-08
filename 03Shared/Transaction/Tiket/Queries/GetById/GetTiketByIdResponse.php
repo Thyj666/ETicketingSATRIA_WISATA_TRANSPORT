@@ -8,5 +8,9 @@ use Domain\Entities\Transaction\Tiket\TiketEntity;
 
 class GetTiketByIdResponse
 {
-    public function __construct(public readonly ?TiketEntity $data, public readonly bool $found) {}
+    public function __construct(
+        public readonly bool $success,
+        public readonly string $message = '',
+        public readonly ?TiketEntity $data = null,
+    ) {}
 }

@@ -8,5 +8,9 @@ use Domain\Entities\Master\Armada\ArmadaEntity;
 
 class GetArmadaByIdResponse
 {
-    public function __construct(public readonly ?ArmadaEntity $data, public readonly bool $found) {}
+    public function __construct(
+        public readonly bool $success,
+        public readonly string $message = '',
+        public readonly ?ArmadaEntity $data = null,
+    ) {}
 }

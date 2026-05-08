@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 define('BASE_PATH', __DIR__);
 define('APP_VERSION', '1.0.0');
-define('APP_NAME', 'SIMPEG SMAN 7 Bungo');
+define('APP_NAME', 'SATRIA WISATA TRANSPORT');
 
 // JWT secret key — ubah nilai ini di production (gunakan nilai acak yang panjang)
-define('JWT_SECRET', getenv('JWT_SECRET') ?: 'simpeg-sman7-bungo-secret-key-2025!');
+define('JWT_SECRET', getenv('JWT_SECRET') ?: 'SATRIA_WISATA_TRANSPORT');
 
 // Autoloader
 spl_autoload_register(function (string $class): void {

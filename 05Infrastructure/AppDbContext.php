@@ -13,7 +13,7 @@ class AppDbContext
     {
         $host   = getenv('DB_HOST')   ?: 'localhost';
         $port   = getenv('DB_PORT')   ?: '3306';
-        $dbname = getenv('DB_NAME')   ?: 'test_auto_migration';
+        $dbname = getenv('DB_NAME')   ?: 'EticketDB';
         $user   = getenv('DB_USER')   ?: 'root';
         $pass   = getenv('DB_PASS')   ?: '';
 

@@ -1,29 +1,30 @@
 <?php
-
 declare(strict_types=1);
-
 namespace WebApi;
 
 use Base\Auth\Auth;
-use Application\Master\User\Commands\Update\UpdateUserCommand;
-use Application\Master\User\Queries\GetUserByIdQuery;
-use Shared\Master\User\Commands\Update\UpdateUserRequest;
-use Shared\Master\User\Queries\GetById\GetUserByIdRequest;
+use Client\Master\User\UserService;
+use Client\Master\Admin\AdminService;
+use Client\Master\Pelanggan\PelangganService;
+use Client\Master\Pimpinan\PimpinanService;
 
 class ProfileController
 {
     public function __construct(
-        private UpdateUserCommand $updateCommand,
-        private GetUserByIdQuery  $getByIdQuery,
+        private UserService      $userService,
+        private AdminService     $adminService,
+        private PelangganService $pelangganService,
+        private PimpinanService  $pimpinanService,
     ) {}
 
     public function index(): void
     {
         Auth::requireAuth();
-        $id    = Auth::id();
-        $res   = $this->getByIdQuery->execute(new GetUserByIdRequest($id));
-        $user  = $res->data;
-        $flash = $_SESSION['flash'] ?? null;
+        $userId  = Auth::id();
+        $role    = Auth::getRole();
+        $user    = $this->userService->getById($userId);
+        $profile = $this->getProfile($userId, $role);
+        $flash   = $_SESSION['flash'] ?? null;
         unset($_SESSION['flash']);
         require BASE_PATH . '/08Bsui/profile/index.php';
     }
@@ -31,21 +32,80 @@ class ProfileController
     public function update(): void
     {
         Auth::requireAuth();
-        $id  = Auth::id();
-        $req = new UpdateUserRequest(
-            id: $id,
-        );
-        $res = $this->updateCommand->execute($req);
-        $_SESSION['flash'] = ['type' => $res->success ? 'success' : 'danger', 'msg' => $res->message];
+        $userId   = Auth::id();
+        $role     = Auth::getRole();
+        $nama     = trim($_POST['nama'] ?? '');
+        $email    = trim($_POST['email'] ?? '') ?: null;
+        $noTelp   = trim($_POST['no_telp'] ?? '') ?: null;
+        $alamat   = trim($_POST['alamat'] ?? '') ?: null;
+        $password = $_POST['password'] ?? '';
 
-        // Jika nama berubah, terbitkan ulang token JWT dengan nama baru
-        if ($res->success) {
+        // Update user password if provided
+        if ($password) {
+            $user = $this->userService->getById($userId);
+            if ($user) {
+                $user->hashPassword($password);
+                $this->userService->save($user);
+            }
+        }
+
+        // Update role-specific profile
+        $profile = $this->getProfile($userId, $role);
+        if ($profile) {
+            $profile->update($nama ?: $profile->getNama(), $email, $noTelp, $alamat, true, $userId);
+            $this->saveProfile($profile, $role);
+        } else {
+            // Create profile if not exists
+            $this->createProfile($userId, $role, $nama, $email, $noTelp, $alamat);
+        }
+
+        // Reissue JWT with updated name
+        if ($nama) {
             $currentUser = Auth::user();
-            $currentUser['nama'] = $req->nama;
+            $currentUser['nama'] = $nama;
             Auth::issue($currentUser);
         }
 
+        $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Profil berhasil diperbarui.'];
         $this->redirect('/profile');
+    }
+
+    private function getProfile(int $userId, ?string $role): ?object
+    {
+        return match($role) {
+            'admin'     => $this->adminService->getByUserId($userId),
+            'pelanggan' => $this->pelangganService->getByUserId($userId),
+            'pimpinan'  => $this->pimpinanService->getByUserId($userId),
+            default     => null,
+        };
+    }
+
+    private function saveProfile(object $profile, ?string $role): void
+    {
+        match($role) {
+            'admin'     => $this->adminService->save($profile),
+            'pelanggan' => $this->pelangganService->save($profile),
+            'pimpinan'  => $this->pimpinanService->save($profile),
+            default     => null,
+        };
+    }
+
+    private function createProfile(int $userId, ?string $role, string $nama, ?string $email, ?string $noTelp, ?string $alamat): void
+    {
+        switch ($role) {
+            case 'admin':
+                $e = \Domain\Entities\Master\Admin\AdminEntity::create($userId, $nama ?: 'Admin', $email, $noTelp, $alamat, $userId);
+                $this->adminService->save($e);
+                break;
+            case 'pelanggan':
+                $e = \Domain\Entities\Master\Pelanggan\PelangganEntity::create($userId, $nama ?: 'Pelanggan', $email, $noTelp, $alamat, $userId);
+                $this->pelangganService->save($e);
+                break;
+            case 'pimpinan':
+                $e = \Domain\Entities\Master\Pimpinan\PimpinanEntity::create($userId, $nama ?: 'Pimpinan', $email, $noTelp, $alamat, $userId);
+                $this->pimpinanService->save($e);
+                break;
+        }
     }
 
     private function redirect(string $path): void

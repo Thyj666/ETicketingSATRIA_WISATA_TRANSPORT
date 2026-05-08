@@ -31,6 +31,9 @@ class PemesananEntity extends AuditableEntity
     private int $userId;
 
     #[Column(type: 'varchar', length: 150, nullable: false)]
+    private string $noPemesanan;
+
+    #[Column(type: 'varchar', length: 150, nullable: false)]
     private string $noSeat;
 
     #[Column(type: 'date', nullable: true, default: null)]
@@ -64,6 +67,11 @@ class PemesananEntity extends AuditableEntity
     public function getUserId(): int
     {
         return $this->userId;
+    }
+
+    public function getNoPemesanan(): string
+    {
+        return $this->noPemesanan;
     }
 
     public function getNoSeat(): string
@@ -110,6 +118,11 @@ class PemesananEntity extends AuditableEntity
         $this->userId = $v;
     }
 
+    public function setNoPemesanan(string $v): void
+    {
+        $this->noPemesanan = $v;
+    }
+
     public function setNoSeat(string $v): void
     {
         $this->noSeat = $v;
@@ -147,6 +160,7 @@ class PemesananEntity extends AuditableEntity
     public static function create(
         int $armadaId,
         int $userId,
+        string $noPemesanan,
         string $noSeat,
         ?string $tanggalPemesanan = null,
         ?string $jamPemesanan = null,
@@ -157,6 +171,7 @@ class PemesananEntity extends AuditableEntity
 
         $entity->setArmadaId($armadaId);
         $entity->setUserId($userId);
+        $entity->setNoPemesanan($noPemesanan);
         $entity->setNoSeat($noSeat);
         $entity->setTanggalPemesanan($tanggalPemesanan);
         $entity->setJamPemesanan($jamPemesanan);
@@ -168,10 +183,12 @@ class PemesananEntity extends AuditableEntity
     }
 
     public function update(
+        string $noPemesanan,
         string $noSeat,
         ?string $statusPemesanan,
         ?int $updatedBy = null
     ): void {
+        $this->setNoPemesanan($noPemesanan);
         $this->setNoSeat($noSeat);
         $this->setStatusPemesanan($statusPemesanan);
 

@@ -4,7 +4,7 @@ $pageTitle  = 'Profil Saya';
 $activeMenu = 'profile';
 require BASE_PATH . '/08Bsui/layouts/app.php';
 
-$profileNama  = $profile?->getNama()   ?? ($user?->getUsername() ?? '');
+$profileNama  = $profile?->getNama()   ?? ($userEntity?->getUsername() ?? '');
 $profileEmail = $profile?->getEmail()  ?? null;
 $profileTelp  = $profile?->getNoTelp() ?? null;
 $profileAlamat = $profile?->getAlamat() ?? null;
@@ -30,7 +30,7 @@ $roleLabel    = $roleLabels[$role] ?? ucfirst($role);
             <div class="profile-avatar-big"><?= $initials ?></div>
             <div class="profile-name"><?= htmlspecialchars($profileNama) ?></div>
             <div class="profile-role-badge"><?= $roleLabel ?></div>
-            <div class="profile-username">@<?= htmlspecialchars($user?->getUsername() ?? '—') ?></div>
+            <div class="profile-username">@<?= htmlspecialchars($userEntity?->getUsername() ?? '—') ?></div>
             <?php if ($profileEmail): ?>
                 <div class="profile-info-row">✉️ <?= htmlspecialchars($profileEmail) ?></div>
             <?php endif; ?>
@@ -53,7 +53,7 @@ $roleLabel    = $roleLabels[$role] ?? ucfirst($role);
                     </div>
                     <div class="form-group">
                         <label class="form-label">Username</label>
-                        <input type="text" class="form-input" value="<?= htmlspecialchars($user?->getUsername() ?? '') ?>" disabled style="background:#f5f5f5">
+                        <input type="text" class="form-input" value="<?= htmlspecialchars($userEntity?->getUsername() ?? '') ?>" disabled style="background:#f5f5f5">
                     </div>
                 </div>
                 <div class="form-row-2">

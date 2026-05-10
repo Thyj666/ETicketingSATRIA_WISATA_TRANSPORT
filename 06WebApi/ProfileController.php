@@ -22,7 +22,7 @@ class ProfileController
         Auth::requireAuth();
         $userId  = Auth::id();
         $role    = Auth::getRole();
-        $user    = $this->userService->getById($userId);
+        $userEntity = $this->userService->getById($userId);
         $profile = $this->getProfile($userId, $role);
         $flash   = $_SESSION['flash'] ?? null;
         unset($_SESSION['flash']);

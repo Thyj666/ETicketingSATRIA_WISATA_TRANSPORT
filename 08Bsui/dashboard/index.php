@@ -19,28 +19,28 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
         <div class="stat-card stat-card--blue">
             <div class="stat-card-icon">🎫</div>
             <div class="stat-card-body">
-                <div class="stat-card-value" id="stat-tiket">—</div>
+                <div class="stat-card-value"><?= number_format($stats['tiket'] ?? 0) ?></div>
                 <div class="stat-card-label">Total Tiket Tersedia</div>
             </div>
         </div>
         <div class="stat-card stat-card--amber">
             <div class="stat-card-icon">🚌</div>
             <div class="stat-card-body">
-                <div class="stat-card-value" id="stat-armada">—</div>
+                <div class="stat-card-value"><?= number_format($stats['armada'] ?? 0) ?></div>
                 <div class="stat-card-label">Armada Beroperasi</div>
             </div>
         </div>
         <div class="stat-card stat-card--green">
             <div class="stat-card-icon">📋</div>
             <div class="stat-card-body">
-                <div class="stat-card-value" id="stat-pemesanan">—</div>
+                <div class="stat-card-value"><?= number_format($stats['pemesanan'] ?? 0) ?></div>
                 <div class="stat-card-label">Pemesanan Hari Ini</div>
             </div>
         </div>
         <div class="stat-card stat-card--navy">
             <div class="stat-card-icon">👥</div>
             <div class="stat-card-body">
-                <div class="stat-card-value" id="stat-pelanggan">—</div>
+                <div class="stat-card-value"><?= number_format($stats['pelanggan'] ?? 0) ?></div>
                 <div class="stat-card-label">Total Pelanggan</div>
             </div>
         </div>

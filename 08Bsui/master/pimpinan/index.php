@@ -68,7 +68,7 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
                             </td>
                             <td class="td-action">
                                 <button class="btn btn-ghost btn-sm btn-icon" title="Edit" onclick="loadEditPimpinan(<?= $p->getId() ?>)">✏️</button>
-                                <form method="POST" action="<?= url('/master/pimpinan/delete') ?>" data-confirm="Hapus pimpinan <?= htmlspecialchars($p->getNama()) ?>?" style="display:inline">
+                                <form method="POST" action="<?= url('/master/pimpinan/delete') ?>" data-confirm="Pimpinan <?= htmlspecialchars($p->getNama()) ?> akan dihapus secara permanen." data-confirm-title="Hapus Pimpinan?" data-confirm-icon="🗑️" data-confirm-btn="Ya, Hapus" style="display:inline">
                                     <input type="hidden" name="id" value="<?= $p->getId() ?>">
                                     <button type="submit" class="btn btn-danger btn-sm btn-icon" title="Hapus">🗑</button>
                                 </form>

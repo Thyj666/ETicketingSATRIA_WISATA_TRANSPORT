@@ -81,7 +81,7 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
                             <?php endif; ?>
                             <?php if ($role === 'admin'): ?>
                                 <button class="btn btn-ghost btn-sm btn-icon" title="Edit" onclick="loadEdit(<?= $t->getId() ?>)">✏️</button>
-                                <form method="POST" action="<?= url('/transaksi/tiket/delete') ?>" data-confirm="Hapus tiket ini?" style="display:inline">
+                                <form method="POST" action="<?= url('/transaksi/tiket/delete') ?>" data-confirm="Tiket ini akan dihapus secara permanen." data-confirm-title="Hapus Tiket?" data-confirm-icon="🎫" data-confirm-btn="Ya, Hapus" style="display:inline">
                                     <input type="hidden" name="id" value="<?= $t->getId() ?>">
                                     <button type="submit" class="btn btn-danger btn-sm btn-icon" title="Hapus">🗑</button>
                                 </form>
@@ -99,7 +99,7 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
      SEAT PICKER MODAL
      ================================================================ -->
 <div class="modal" id="modal-seat">
-    <div class="modal-box modal-box-wide">
+    <div class="modal-dialog modal-dialog-lg">
         <div class="modal-header">
             <h3 class="modal-title" id="seat-modal-title">Pilih Kursi</h3>
             <button class="modal-close" onclick="closeModal('modal-seat')">✕</button>
@@ -157,7 +157,7 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
 <?php if ($role === 'admin'): ?>
     <!-- Create Modal -->
     <div class="modal" id="modal-create">
-        <div class="modal-box">
+        <div class="modal-dialog">
             <div class="modal-header">
                 <h3 class="modal-title">Tambah Tiket</h3>
                 <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
@@ -202,7 +202,7 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
 
     <!-- Edit Modal -->
     <div class="modal" id="modal-edit">
-        <div class="modal-box">
+        <div class="modal-dialog">
             <div class="modal-header">
                 <h3 class="modal-title">Edit Tiket</h3>
                 <button class="modal-close" onclick="closeModal('modal-edit')">✕</button>

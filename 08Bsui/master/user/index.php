@@ -77,7 +77,7 @@ $roles = ['admin' => '👤 Admin', 'pelanggan' => '👥 Pelanggan', 'pimpinan' =
                             <td class="td-muted"><?= $u->getCreatedAt() ? date('d/m/Y', strtotime($u->getCreatedAt())) : '—' ?></td>
                             <td class="td-action">
                                 <button class="btn btn-ghost btn-sm btn-icon" title="Edit" onclick="loadEditUser(<?= $u->getId() ?>)">✏️</button>
-                                <form method="POST" action="<?= url('/master/user/delete') ?>" data-confirm="Hapus user <?= htmlspecialchars($u->getUsername()) ?>?" style="display:inline">
+                                <form method="POST" action="<?= url('/master/user/delete') ?>" data-confirm="User <?= htmlspecialchars($u->getUsername()) ?> akan dihapus secara permanen." data-confirm-title="Hapus User?" data-confirm-icon="🔑" data-confirm-btn="Ya, Hapus" style="display:inline">
                                     <input type="hidden" name="id" value="<?= $u->getId() ?>">
                                     <button type="submit" class="btn btn-danger btn-sm btn-icon" title="Hapus">🗑</button>
                                 </form>

@@ -22,7 +22,7 @@ class TiketEntity extends AuditableEntity
     // ------------------------------------------------------------------
 
     #[Column(type: 'int', unsigned: true, nullable: false)]
-    #[ForeignKey(references: 'armadas', on: 'id', onDelete: 'CASCADE')]
+    #[ForeignKey(references: 'armada', on: 'id', onDelete: 'CASCADE')]
     private int $armadaId;
 
     #[Column(type: 'varchar', length: 150, nullable: false)]

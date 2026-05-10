@@ -94,7 +94,7 @@ class TiketService
     {
         $this->db->execute(
             "INSERT INTO tikets (armada_id, tujuan, tanggal_berangkat, jam_berangkat, harga, is_full, is_deleted, created_by, created_at)
-             VALUES (?,?,?,?,?,1,0,?,NOW())",
+             VALUES (?,?,?,?,?,0,0,?,NOW())",
             [$e->getArmadaId(), $e->getTujuan(), $e->getTanggalBerangkat(), $e->getJamBerangkat(), $e->getHarga(), $e->getCreatedBy()]
         );
         return $this->db->lastInsertId();

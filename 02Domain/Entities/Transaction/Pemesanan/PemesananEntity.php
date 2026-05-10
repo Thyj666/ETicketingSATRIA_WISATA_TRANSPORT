@@ -20,6 +20,7 @@ class PemesananEntity extends AuditableEntity
 {
     #[Column(type: 'int', unsigned: true, nullable: false)]
     #[ForeignKey(references: 'armada', on: 'id', onDelete: 'CASCADE')]
+
     private int $armadaId;
 
     #[Column(type: 'int', unsigned: true, nullable: false)]

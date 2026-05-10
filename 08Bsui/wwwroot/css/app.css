@@ -667,48 +667,67 @@ textarea.form-control { resize: vertical; min-height: 90px; }
 .badge-gray    { background: var(--gray-200);  color: var(--gray-500); }
 
 /* ================================================================
-   MODAL
+   MODAL — Unified system
+   .modal          = fixed backdrop overlay (hidden by default)
+   .modal.active   = show backdrop (JS: openModal / closeModal)
+   .modal-dialog   = white card inside backdrop
    ================================================================ */
-.modal-backdrop {
+
+/* Backdrop */
+.modal {
   position: fixed;
   inset: 0;
-  background: rgba(15,27,45,.55);
-  backdrop-filter: blur(4px);
+  background: rgba(10, 20, 38, .6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   z-index: 900;
   display: none;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  overflow-y: auto;
 }
+.modal.active { display: flex; }
 
-.modal-backdrop.open { display: flex; }
+/* Click backdrop to close — JS handles this */
 
-.modal {
+/* White card */
+.modal-dialog {
   background: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  border-radius: 18px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.22), 0 4px 16px rgba(0,0,0,.12);
   width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
+  max-width: 540px;
+  max-height: calc(100vh - 40px);
   display: flex;
   flex-direction: column;
-  animation: modalIn .2s ease;
+  animation: modalIn .22s cubic-bezier(.34,1.26,.64,1) both;
+  overflow: hidden;
+  position: relative;
+  margin: auto;
 }
+
+/* Size variants */
+.modal-dialog-sm  { max-width: 400px; }
+.modal-dialog-lg  { max-width: 720px; }
+.modal-dialog-xl  { max-width: 900px; }
+
+/* Confirm dialog style */
+.modal-dialog-confirm { max-width: 420px; }
 
 @keyframes modalIn {
-  from { opacity: 0; transform: scale(.96) translateY(10px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  from { opacity: 0; transform: scale(.94) translateY(16px); }
+  to   { opacity: 1; transform: scale(1)   translateY(0); }
 }
 
-.modal-lg { max-width: 720px; }
-.modal-xl { max-width: 900px; }
-
 .modal-header {
-  padding: 20px 24px;
+  padding: 20px 24px 18px;
   border-bottom: 1px solid var(--gray-200);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
+  gap: 12px;
 }
 
 .modal-title {
@@ -716,30 +735,89 @@ textarea.form-control { resize: vertical; min-height: 90px; }
   font-size: 1rem;
   font-weight: 700;
   color: var(--navy);
+  line-height: 1.3;
 }
 
 .modal-close {
-  width: 30px; height: 30px;
+  width: 32px; height: 32px;
   border: none;
   background: var(--gray-100);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
+  font-size: 16px;
   color: var(--gray-500);
   transition: var(--transition);
   line-height: 1;
+  flex-shrink: 0;
+  cursor: pointer;
 }
-
 .modal-close:hover { background: var(--red-dim); color: var(--red); }
 
-.modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
 .modal-footer {
   padding: 16px 24px;
   border-top: 1px solid var(--gray-200);
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
+
+/* Confirm modal specific */
+.confirm-icon {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 16px;
+  flex-shrink: 0;
+}
+.confirm-icon.danger  { background: var(--red-dim); }
+.confirm-icon.warning { background: #fef3c7; }
+.confirm-icon.success { background: var(--green-dim); }
+
+.confirm-body {
+  text-align: center;
+  padding: 28px 24px 20px;
+}
+.confirm-title {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.confirm-desc {
+  font-size: .88rem;
+  color: var(--gray-500);
+  line-height: 1.6;
+}
+.confirm-footer {
+  padding: 0 24px 24px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* Legacy backdrop support */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,20,38,.6);
+  backdrop-filter: blur(6px);
+  z-index: 900;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-backdrop.open { display: flex; }
 
 /* ================================================================
    ALERTS / FLASH MESSAGES
@@ -2339,74 +2417,9 @@ textarea.form-input { resize: vertical; min-height: 90px; }
 }
 .empty-state p { font-size: .85rem; color: var(--gray-500); }
 
-/* ================================================================
-   MODAL — Unified system using .modal.active
-   JS uses openModal(id) → adds class "active" directly to .modal
-   ================================================================ */
-
-/* The .modal element IS the backdrop+centering wrapper */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(15,27,45,.55);
-  backdrop-filter: blur(4px);
-  z-index: 900;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.modal.active { display: flex; }
-
-/* .modal-dialog is the white box (used in master pages) */
-.modal-dialog {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  animation: modalIn .2s ease;
-  overflow: hidden;
-}
-
-/* .modal-box is another white box variant (used in tiket page) */
-.modal-box {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  animation: modalIn .2s ease;
-  overflow: hidden;
-}
-.modal-box-wide { max-width: 720px; }
-
-/* Keep .modal-backdrop.open working for any legacy usage */
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15,27,45,.55);
-  backdrop-filter: blur(4px);
-  z-index: 900;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.modal-backdrop.open { display: flex; }
-/* inner .modal inside .modal-backdrop is the white box */
-.modal-backdrop > .modal {
-  position: static;
-  background: var(--white);
-  display: flex;
-  flex-direction: column;
-}
+/* modal-box alias for .modal-dialog (tiket page uses this) */
+.modal-box         { /* same as .modal-dialog */ }
+.modal-box-wide    { max-width: 720px; }
 
 /* ================================================================
    SEAT MAP (ticket page) — extended from base styles
@@ -2495,3 +2508,50 @@ textarea.form-input { resize: vertical; min-height: 90px; }
 }
 
 .seat.seat-aisle { margin-left: 12px; }
+
+/* ---- form-row-2/3 standalone (views use only class="form-row-2" without "form-row") ---- */
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 0;
+}
+.form-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .form-row-2, .form-row-3 { grid-template-columns: 1fr; }
+}
+
+/* ---- Profile page extras ---- */
+.profile-name {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--navy);
+  margin-bottom: 2px;
+}
+.profile-form-card { /* alias card-block already styled */ }
+
+/* ---- Input with icon (profile password fields) ---- */
+.input-icon-wrap { position: relative; }
+.input-icon-wrap .form-input,
+.input-icon-wrap .form-control { padding-right: 44px; }
+
+.input-eye {
+  position: absolute;
+  right: 12px; top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: .95rem;
+  color: var(--gray-400);
+  padding: 4px;
+  line-height: 1;
+  transition: color .2s;
+}
+.input-eye:hover { color: var(--amber); }

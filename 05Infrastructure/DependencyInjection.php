@@ -344,11 +344,7 @@ class DependencyInjection
         );
         $this->bind(
             \WebApi\DashboardController::class,
-            fn() => new \WebApi\DashboardController(
-                $this->make(\Client\Master\User\UserService::class),
-                $this->make(\Client\Transaction\Tiket\TiketService::class),
-                $this->make(\Client\Transaction\Pemesanan\PemesananService::class)
-            )
+            fn() => new \WebApi\DashboardController($db)
         );
         $this->bind(
             \WebApi\ProfileController::class,
@@ -404,7 +400,9 @@ class DependencyInjection
         $this->bind(
             \WebApi\Transaction\Laporan\LaporanController::class,
             fn() => new \WebApi\Transaction\Laporan\LaporanController(
-                $this->make(\Application\Transaction\Laporan\Queries\GetLaporanQuery::class)
+                $this->make(\Application\Transaction\Laporan\Queries\GetLaporanQuery::class),
+                $this->make(\Client\Transaction\Tiket\TiketService::class),
+                $this->make(\Client\Transaction\Pemesanan\PemesananService::class)
             )
         );
     }

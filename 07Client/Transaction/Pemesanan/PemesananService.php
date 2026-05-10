@@ -60,10 +60,11 @@ class PemesananService
     {
         $sql = "SELECT p.*, 
                     a.nama_armada, a.plat_nomor, a.tipe_seat, a.jumlah_seat, a.status as armada_status,
-                    u.nama as nama_penumpang, u.email as email_penumpang, u.no_telp as no_telp_penumpang
+                    COALESCE(pl.nama, u.nama) as nama_penumpang, pl.email as email_penumpang, pl.no_telp as no_telp_penumpang
                 FROM pemesanans p
                 LEFT JOIN armada a ON p.armada_id = a.id
                 LEFT JOIN users u ON p.user_id = u.id
+                LEFT JOIN pelanggan pl ON pl.user_id = u.id AND pl.is_deleted = 0
                 WHERE p.is_deleted = 0";
         $params = [];
         if ($userId > 0) {
@@ -87,10 +88,11 @@ class PemesananService
         $row = $this->db->fetchOne(
             "SELECT p.*, 
                 a.nama_armada, a.plat_nomor, a.tipe_seat, a.jumlah_seat, a.status as armada_status,
-                u.nama as nama_penumpang, u.email as email_penumpang, u.no_telp as no_telp_penumpang
+                COALESCE(pl.nama, u.nama) as nama_penumpang, pl.email as email_penumpang, pl.no_telp as no_telp_penumpang
              FROM pemesanans p
              LEFT JOIN armada a ON p.armada_id = a.id
              LEFT JOIN users u ON p.user_id = u.id
+             LEFT JOIN pelanggan pl ON pl.user_id = u.id AND pl.is_deleted = 0
              WHERE p.id = ? AND p.is_deleted = 0",
             [$id]
         );
@@ -102,10 +104,11 @@ class PemesananService
         $row = $this->db->fetchOne(
             "SELECT p.*, 
                 a.nama_armada, a.plat_nomor, a.tipe_seat, a.jumlah_seat, a.status as armada_status,
-                u.nama as nama_penumpang, u.email as email_penumpang, u.no_telp as no_telp_penumpang
+                COALESCE(pl.nama, u.nama) as nama_penumpang, pl.email as email_penumpang, pl.no_telp as no_telp_penumpang
              FROM pemesanans p
              LEFT JOIN armada a ON p.armada_id = a.id
              LEFT JOIN users u ON p.user_id = u.id
+             LEFT JOIN pelanggan pl ON pl.user_id = u.id AND pl.is_deleted = 0
              WHERE p.midtrans_order_id = ? AND p.is_deleted = 0",
             [$orderId]
         );

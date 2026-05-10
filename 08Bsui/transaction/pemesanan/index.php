@@ -94,7 +94,7 @@ $statusLabels = [
                                     <a href="<?= url('/transaksi/pemesanan/bayar?id=' . $p->getId()) ?>" class="btn btn-primary btn-sm">💳 Bayar</a>
                                 <?php endif; ?>
                                 <?php if ($isAdmin && $st === 'pending'): ?>
-                                    <form method="POST" action="<?= url('/transaksi/pemesanan/konfirmasi') ?>" data-confirm="Konfirmasi pembayaran ini?" style="display:inline">
+                                    <form method="POST" action="<?= url('/transaksi/pemesanan/konfirmasi') ?>" data-confirm="Pembayaran ini akan dikonfirmasi dan status diubah menjadi Terkonfirmasi." data-confirm-title="Konfirmasi Pembayaran?" data-confirm-icon="✅" data-confirm-btn="Ya, Konfirmasi" data-confirm-class="btn btn-success" style="display:inline">
                                         <input type="hidden" name="id" value="<?= $p->getId() ?>">
                                         <button class="btn btn-success btn-sm">✓ Konfirmasi</button>
                                     </form>

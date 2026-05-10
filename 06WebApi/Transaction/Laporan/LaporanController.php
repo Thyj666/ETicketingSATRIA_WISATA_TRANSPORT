@@ -65,11 +65,12 @@ class LaporanController
         $sql  = "SELECT p.*, 
                     t.tujuan, t.tanggal_berangkat, t.jam_berangkat, t.harga as harga_tiket,
                     a.nama_armada, a.plat_nomor,
-                    u.nama as nama_penumpang, u.email as email_penumpang, u.no_telp as no_telp_penumpang
+                    COALESCE(pl.nama, u.nama) as nama_penumpang, pl.email as email_penumpang, pl.no_telp as no_telp_penumpang
                  FROM pemesanans p
                  LEFT JOIN tikets t ON p.tiket_id = t.id
                  LEFT JOIN armada a ON t.armada_id = a.id
                  LEFT JOIN users u ON p.user_id = u.id
+                 LEFT JOIN pelanggan pl ON pl.user_id = u.id AND pl.is_deleted = 0
                  WHERE p.is_deleted = 0";
         $params = [];
 
@@ -82,7 +83,7 @@ class LaporanController
             $params[] = $status;
         }
         if ($search) {
-            $sql .= " AND (u.nama LIKE ? OR t.tujuan LIKE ? OR p.no_pemesanan LIKE ?)";
+            $sql .= " AND (COALESCE(pl.nama, u.nama) LIKE ? OR t.tujuan LIKE ? OR p.no_pemesanan LIKE ?)";
             $params[] = "%$search%";
             $params[] = "%$search%";
             $params[] = "%$search%";

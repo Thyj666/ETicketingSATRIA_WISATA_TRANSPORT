@@ -12,6 +12,10 @@ use Infrastructure\AppDbContext;
  * Orchestrator utama untuk semua seeder.
  * Urutan seeder PENTING: data yang menjadi referensi FK harus di-seed lebih dulu.
  *
+ * Urutan saat ini:
+ *   1. UserSeeder   → mengisi `users` + profil (admin / pimpinan / pelanggan)
+ *   2. ArmadaSeeder → mengisi `armada` (tidak bergantung pada user)
+ *
  * Cara menambah seeder baru:
  *   1. Buat file SesuatuSeeder.php di folder ini, extends Seeder.
  *   2. Implementasikan method run() — pastikan idempoten (INSERT IGNORE).
@@ -41,12 +45,16 @@ class DatabaseSeeder
 
     /**
      * Daftar seeder yang akan dijalankan, berurutan.
+     *
+     * PENTING:
+     *   - UserSeeder HARUS lebih dulu dari seeder lain yang butuh user_id sebagai FK.
+     *   - ArmadaSeeder tidak bergantung pada tabel user, boleh di posisi manapun.
      */
     private function seeders(): array
     {
         return [
-            ArmadaSeeder::class,
-            UserSeeder::class,
+            UserSeeder::class,    // 1. users + admin + pimpinan + pelanggan
+            ArmadaSeeder::class,  // 2. armada
         ];
     }
 }

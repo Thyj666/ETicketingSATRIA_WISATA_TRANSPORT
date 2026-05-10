@@ -33,9 +33,9 @@ class DatabaseMigration
             '002_create_admin'      => \Domain\Entities\Master\Admin\AdminEntity::class,
             '003_create_pelanggan'  => \Domain\Entities\Master\Pelanggan\PelangganEntity::class,
             '004_create_pimpinan'   => \Domain\Entities\Master\Pimpinan\PimpinanEntity::class,
-            '010_create_armada'     => \Domain\Entities\Master\Armada\ArmadaEntity::class,
-            '011_create_tikets'     => \Domain\Entities\Transaction\Tiket\TiketEntity::class,
-            '012_create_pemesanans' => \Domain\Entities\Transaction\Pemesanan\PemesananEntity::class,
+            '005_create_armada'     => \Domain\Entities\Master\Armada\ArmadaEntity::class,
+            '006_create_tikets'     => \Domain\Entities\Transaction\Tiket\TiketEntity::class,
+            '007_create_pemesanans' => \Domain\Entities\Transaction\Pemesanan\PemesananEntity::class,
         ];
     }
 

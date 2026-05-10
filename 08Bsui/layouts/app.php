@@ -1,12 +1,13 @@
 <?php
 // layouts/app.php — master layout
 // Usage: include this at the top of each page view, set $pageTitle before including
-$pageTitle   = $pageTitle   ?? 'Satria Wisata Transport';
-$activeMenu  = $activeMenu  ?? '';
-$user        = \Base\Auth\Auth::user();
-$role        = $user['role'] ?? '';
-$nama        = $user['nama'] ?? 'User';
-$initials    = strtoupper(substr($nama, 0, 1));
+// Role: admin | pelanggan | pimpinan
+$pageTitle  = $pageTitle  ?? 'Satria Wisata Transport';
+$activeMenu = $activeMenu ?? '';
+$user       = \Base\Auth\Auth::user();
+$role       = $user['role'] ?? '';
+$nama       = $user['nama'] ?? 'User';
+$initials   = strtoupper(substr($nama, 0, 1));
 
 function menuItem(string $href, string $icon, string $label, string $active): string
 {
@@ -49,36 +50,30 @@ function menuItem(string $href, string $icon, string $label, string $active): st
             <div class="sidebar-avatar"><?= $initials ?></div>
             <div class="sidebar-user-info">
                 <div class="sidebar-user-name"><?= htmlspecialchars($nama) ?></div>
-                <div class="sidebar-user-role"><?= ucfirst(str_replace('_', ' ', $role)) ?></div>
+                <div class="sidebar-user-role"><?= ucfirst($role) ?></div>
             </div>
         </div>
 
         <nav class="sidebar-nav">
             <?= menuItem('/dashboard', '🏠', 'Dashboard', $activeMenu) ?>
 
-            <?php if (in_array($role, ['admin', 'admin_tu'])): ?>
-                <div class="nav-section-title">Master Data</div>
-            <?php endif; ?>
-
             <?php if ($role === 'admin'): ?>
-                <?= menuItem('/master/admin', '👤', 'Admin', $activeMenu) ?>
+                <div class="nav-section-title">Master Data</div>
+                <?= menuItem('/master/admin',    '👤', 'Admin',    $activeMenu) ?>
                 <?= menuItem('/master/pelanggan', '👥', 'Pelanggan', $activeMenu) ?>
-                <?= menuItem('/master/pimpinan', '🎓', 'Pimpinan', $activeMenu) ?>
-                <?= menuItem('/master/user', '🔑', 'User', $activeMenu) ?>
-            <?php endif; ?>
-
-            <?php if ($role === 'admin_tu'): ?>
-                <?= menuItem('/master/armada', '🚌', 'Armada', $activeMenu) ?>
+                <?= menuItem('/master/pimpinan',  '🏆', 'Pimpinan',  $activeMenu) ?>
+                <?= menuItem('/master/armada',    '🚌', 'Armada',    $activeMenu) ?>
+                <?= menuItem('/master/user',      '🔑', 'User',      $activeMenu) ?>
             <?php endif; ?>
 
             <div class="nav-section-title">Transaksi</div>
             <?= menuItem('/transaksi/tiket', '🎫', 'Tiket', $activeMenu) ?>
 
-            <?php if (!in_array($role, ['kepala_sekolah'])): ?>
+            <?php if (in_array($role, ['admin', 'pelanggan'])): ?>
                 <?= menuItem('/transaksi/pemesanan', '📋', 'Pemesanan', $activeMenu) ?>
             <?php endif; ?>
 
-            <?php if (in_array($role, ['admin', 'admin_tu', 'kepala_sekolah'])): ?>
+            <?php if (in_array($role, ['admin', 'pimpinan'])): ?>
                 <?= menuItem('/transaksi/laporan', '📊', 'Laporan', $activeMenu) ?>
             <?php endif; ?>
 
@@ -106,7 +101,7 @@ function menuItem(string $href, string $icon, string $label, string $active): st
                     <div class="topbar-avatar"><?= $initials ?></div>
                     <div class="topbar-user-info">
                         <div class="topbar-user-name"><?= htmlspecialchars($nama) ?></div>
-                        <div class="topbar-user-role"><?= ucfirst(str_replace('_', ' ', $role)) ?></div>
+                        <div class="topbar-user-role"><?= ucfirst($role) ?></div>
                     </div>
                 </div>
             </div>

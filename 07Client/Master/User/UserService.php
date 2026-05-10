@@ -15,6 +15,8 @@ class UserService
     {
         $e = new UserEntity();
         $e->setId((int) $row['id']);
+        // BUG FIX: mapping field 'nama' yang sebelumnya tidak ada di mapRow
+        $e->setNama($row['nama'] ?? null);
         $e->setUsername($row['username'] ?? '');
         $e->setPassword($row['password'] ?? '');
         $e->setRole($row['role'] ?? 'pelanggan');
@@ -27,16 +29,16 @@ class UserService
 
     public function getAll(string $search = '', string $role = ''): array
     {
-        $sql = "SELECT u.* FROM users u WHERE u.is_deleted = 0";
+        $sql    = "SELECT u.* FROM users u WHERE u.is_deleted = 0";
         $params = [];
         if ($search) {
-            $sql .= " AND (u.username LIKE ? OR u.role LIKE ?)";
-            $params[] = "%$search%";
-            $params[] = "%$search%";
+            $sql      .= " AND (u.username LIKE ? OR u.role LIKE ?)";
+            $params[]  = "%$search%";
+            $params[]  = "%$search%";
         }
         if ($role) {
-            $sql .= " AND u.role = ?";
-            $params[] = $role;
+            $sql      .= " AND u.role = ?";
+            $params[]  = $role;
         }
         $sql .= " ORDER BY u.id DESC";
         return array_map(fn($r) => $this->mapRow($r), $this->db->fetchAll($sql, $params));
@@ -64,9 +66,10 @@ class UserService
     {
         if ($e->isNew()) {
             $this->db->execute(
-                "INSERT INTO users (username, password, role, is_active, is_deleted, created_at, updated_at, created_by, updated_by)
-                 VALUES (?, ?, ?, ?, 0, ?, ?, ?, ?)",
+                "INSERT INTO users (nama, username, password, role, is_active, is_deleted, created_at, updated_at, created_by, updated_by)
+                 VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?, ?)",
                 [
+                    $e->getNama(),
                     $e->getUsername(),
                     $e->getPassword(),
                     $e->getRole(),
@@ -106,11 +109,11 @@ class UserService
 
     public function usernameExists(string $username, ?int $excludeId = null): bool
     {
-        $sql = "SELECT COUNT(*) as cnt FROM users WHERE username=? AND is_deleted=0";
+        $sql    = "SELECT COUNT(*) as cnt FROM users WHERE username=? AND is_deleted=0";
         $params = [$username];
         if ($excludeId) {
-            $sql .= " AND id != ?";
-            $params[] = $excludeId;
+            $sql      .= " AND id != ?";
+            $params[]  = $excludeId;
         }
         $row = $this->db->fetchOne($sql, $params);
         return ($row['cnt'] ?? 0) > 0;

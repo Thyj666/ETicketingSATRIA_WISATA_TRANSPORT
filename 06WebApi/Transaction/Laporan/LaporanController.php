@@ -19,19 +19,17 @@ class LaporanController
 
     public function index(): void
     {
-        Auth::requireRole(['admin_tu', 'kepala_sekolah']);
+        // Laporan hanya untuk admin dan pimpinan
+        Auth::requireRole(['admin', 'pimpinan']);
 
         $jenis   = $_GET['jenis']   ?? 'pemesanan';
         $tanggal = $_GET['tanggal'] ?? '';
         $status  = $_GET['status']  ?? '';
         $search  = $_GET['search']  ?? '';
 
-        // Laporan pemesanan/tiket (baru)
         $laporanPemesanan = $this->getLaporanPemesanan($tanggal, $status, $search);
         $laporanTiket     = $this->getLaporanTiket($tanggal, $search);
-
-        // Summary stats
-        $summary = $this->getSummary();
+        $summary          = $this->getSummary();
 
         $flash = $_SESSION['flash'] ?? null;
         unset($_SESSION['flash']);
@@ -41,7 +39,9 @@ class LaporanController
 
     public function export(): void
     {
-        Auth::requireRole(['admin_tu', 'kepala_sekolah']);
+        // Export hanya untuk admin dan pimpinan
+        Auth::requireRole(['admin', 'pimpinan']);
+
         $jenis   = $_GET['jenis']   ?? 'pemesanan';
         $tanggal = $_GET['tanggal'] ?? '';
         $status  = $_GET['status']  ?? '';
@@ -124,12 +124,12 @@ class LaporanController
     {
         $db = \Infrastructure\AppDbContext::getInstance();
         return [
-            'total_tiket'       => $db->fetchOne("SELECT COUNT(*) as c FROM tikets WHERE is_deleted=0")['c'] ?? 0,
-            'tiket_aktif'       => $db->fetchOne("SELECT COUNT(*) as c FROM tikets WHERE is_deleted=0 AND is_full=0")['c'] ?? 0,
-            'total_pemesanan'   => $db->fetchOne("SELECT COUNT(*) as c FROM pemesanans WHERE is_deleted=0")['c'] ?? 0,
+            'total_tiket'         => $db->fetchOne("SELECT COUNT(*) as c FROM tikets WHERE is_deleted=0")['c'] ?? 0,
+            'tiket_aktif'         => $db->fetchOne("SELECT COUNT(*) as c FROM tikets WHERE is_deleted=0 AND is_full=0")['c'] ?? 0,
+            'total_pemesanan'     => $db->fetchOne("SELECT COUNT(*) as c FROM pemesanans WHERE is_deleted=0")['c'] ?? 0,
             'pemesanan_confirmed' => $db->fetchOne("SELECT COUNT(*) as c FROM pemesanans WHERE is_deleted=0 AND status_pemesanan='confirmed'")['c'] ?? 0,
-            'pemesanan_pending' => $db->fetchOne("SELECT COUNT(*) as c FROM pemesanans WHERE is_deleted=0 AND status_pemesanan='pending'")['c'] ?? 0,
-            'total_pendapatan'  => $db->fetchOne("SELECT COALESCE(SUM(total_harga),0) as s FROM pemesanans WHERE is_deleted=0 AND status_pemesanan='confirmed'")['s'] ?? 0,
+            'pemesanan_pending'   => $db->fetchOne("SELECT COUNT(*) as c FROM pemesanans WHERE is_deleted=0 AND status_pemesanan='pending'")['c'] ?? 0,
+            'total_pendapatan'    => $db->fetchOne("SELECT COALESCE(SUM(total_harga),0) as s FROM pemesanans WHERE is_deleted=0 AND status_pemesanan='confirmed'")['s'] ?? 0,
         ];
     }
 

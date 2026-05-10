@@ -1,5 +1,6 @@
 <?php
 // dashboard/index.php
+// Role: admin | pelanggan | pimpinan
 $pageTitle  = 'Dashboard';
 $activeMenu = 'dashboard';
 require BASE_PATH . '/08Bsui/layouts/app.php';
@@ -52,20 +53,34 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
             <div class="quick-link-icon">🎫</div>
             <div class="quick-link-label">Lihat Tiket</div>
         </a>
-        <a href="<?= url('/transaksi/pemesanan') ?>" class="quick-link-card">
-            <div class="quick-link-icon">📋</div>
-            <div class="quick-link-label">Pemesanan Saya</div>
-        </a>
-        <a href="<?= url('/profile') ?>" class="quick-link-card">
-            <div class="quick-link-icon">⚙️</div>
-            <div class="quick-link-label">Profil Saya</div>
-        </a>
-        <?php if (in_array($role, ['admin_tu', 'admin'])): ?>
+
+        <?php if (in_array($role, ['admin', 'pelanggan'])): ?>
+            <a href="<?= url('/transaksi/pemesanan') ?>" class="quick-link-card">
+                <div class="quick-link-icon">📋</div>
+                <div class="quick-link-label">
+                    <?= $role === 'pelanggan' ? 'Pemesanan Saya' : 'Kelola Pemesanan' ?>
+                </div>
+            </a>
+        <?php endif; ?>
+
+        <?php if (in_array($role, ['admin', 'pimpinan'])): ?>
+            <a href="<?= url('/transaksi/laporan') ?>" class="quick-link-card">
+                <div class="quick-link-icon">📊</div>
+                <div class="quick-link-label">Laporan</div>
+            </a>
+        <?php endif; ?>
+
+        <?php if ($role === 'admin'): ?>
             <a href="<?= url('/master/armada') ?>" class="quick-link-card">
                 <div class="quick-link-icon">🚌</div>
                 <div class="quick-link-label">Kelola Armada</div>
             </a>
         <?php endif; ?>
+
+        <a href="<?= url('/profile') ?>" class="quick-link-card">
+            <div class="quick-link-icon">⚙️</div>
+            <div class="quick-link-label">Profil Saya</div>
+        </a>
     </div>
 </main>
 </div><!-- .layout-wrapper -->

@@ -22,20 +22,21 @@ use Client\Transaction\Tiket\TiketService;
 class TiketController
 {
     public function __construct(
-        private CreateTiketCommand  $createCmd,
-        private UpdateTiketCommand  $updateCmd,
-        private DeleteTiketCommand  $deleteCmd,
-        private GetTiketByIdQuery   $getById,
-        private GetTiketByListQuery $getList,
+        private CreateTiketCommand   $createCmd,
+        private UpdateTiketCommand   $updateCmd,
+        private DeleteTiketCommand   $deleteCmd,
+        private GetTiketByIdQuery    $getById,
+        private GetTiketByListQuery  $getList,
         private GetArmadaByListQuery $getArmadaList,
-        private TiketService        $tiketService,
+        private TiketService         $tiketService,
     ) {}
 
     public function index(): void
     {
+        // Semua user yang login bisa melihat daftar tiket
         Auth::requireAuth();
-        $search  = $_GET['search'] ?? '';
-        $tujuan  = $_GET['tujuan'] ?? '';
+        $search  = $_GET['search']  ?? '';
+        $tujuan  = $_GET['tujuan']  ?? '';
         $tanggal = $_GET['tanggal'] ?? '';
         $list    = $this->getList->execute(new GetTiketByListRequest(0, $search, $tujuan, $tanggal))->data;
         $armadas = $this->getArmadaList->execute(new GetArmadaByListRequest('', 'tersedia'))->data;
@@ -47,13 +48,14 @@ class TiketController
 
     public function create(): void
     {
-        Auth::requireRole(['admin_tu']);
-        $armadaId        = (int)($_POST['armada_id'] ?? 0);
-        $tujuan          = trim($_POST['tujuan'] ?? '');
+        // Hanya admin yang bisa membuat tiket
+        Auth::requireRole(['admin']);
+        $armadaId         = (int)($_POST['armada_id'] ?? 0);
+        $tujuan           = trim($_POST['tujuan'] ?? '');
         $tanggalBerangkat = trim($_POST['tanggal_berangkat'] ?? '') ?: null;
-        $jamBerangkat    = trim($_POST['jam_berangkat'] ?? '') ?: null;
-        $harga           = (float)($_POST['harga'] ?? 0);
-        $actorId         = Auth::id();
+        $jamBerangkat     = trim($_POST['jam_berangkat'] ?? '') ?: null;
+        $harga            = (float)($_POST['harga'] ?? 0);
+        $actorId          = Auth::id();
 
         $req = new CreateTiketRequest($armadaId, $tujuan, $tanggalBerangkat, $jamBerangkat, $harga);
         $res = $this->createCmd->execute($req, $actorId);
@@ -64,15 +66,16 @@ class TiketController
 
     public function update(): void
     {
-        Auth::requireRole(['admin_tu']);
-        $id              = (int)($_POST['id'] ?? 0);
-        $armadaId        = (int)($_POST['armada_id'] ?? 0);
-        $tujuan          = trim($_POST['tujuan'] ?? '');
+        // Hanya admin yang bisa mengubah tiket
+        Auth::requireRole(['admin']);
+        $id               = (int)($_POST['id'] ?? 0);
+        $armadaId         = (int)($_POST['armada_id'] ?? 0);
+        $tujuan           = trim($_POST['tujuan'] ?? '');
         $tanggalBerangkat = trim($_POST['tanggal_berangkat'] ?? '') ?: null;
-        $jamBerangkat    = trim($_POST['jam_berangkat'] ?? '') ?: null;
-        $harga           = (float)($_POST['harga'] ?? 0);
-        $isFull          = isset($_POST['is_full']) && $_POST['is_full'] === '1';
-        $actorId         = Auth::id();
+        $jamBerangkat     = trim($_POST['jam_berangkat'] ?? '') ?: null;
+        $harga            = (float)($_POST['harga'] ?? 0);
+        $isFull           = isset($_POST['is_full']) && $_POST['is_full'] === '1';
+        $actorId          = Auth::id();
 
         $req = new UpdateTiketRequest($id, $armadaId, $tujuan, $tanggalBerangkat, $jamBerangkat, $harga, $isFull);
         $res = $this->updateCmd->execute($req, $actorId);
@@ -83,7 +86,8 @@ class TiketController
 
     public function delete(): void
     {
-        Auth::requireRole(['admin_tu']);
+        // Hanya admin yang bisa menghapus tiket
+        Auth::requireRole(['admin']);
         $id      = (int)($_POST['id'] ?? 0);
         $actorId = Auth::id();
         $res     = $this->deleteCmd->execute(new DeleteTiketRequest($id), $actorId);
@@ -104,16 +108,16 @@ class TiketController
             return;
         }
         echo json_encode([
-            'id'               => $d->getId(),
-            'armada_id'        => $d->getArmadaId(),
-            'tujuan'           => $d->getTujuan(),
+            'id'                => $d->getId(),
+            'armada_id'         => $d->getArmadaId(),
+            'tujuan'            => $d->getTujuan(),
             'tanggal_berangkat' => $d->getTanggalBerangkat(),
-            'jam_berangkat'    => $d->getJamBerangkat(),
-            'harga'            => $d->getHarga(),
-            'is_full'          => $d->getIsFull(),
-            'nama_armada'      => $d->getArmada()?->getNamaArmada(),
-            'jumlah_seat'      => $d->getArmada()?->getJumlahSeat(),
-            'tipe_seat'        => $d->getArmada()?->getTipeSeat(),
+            'jam_berangkat'     => $d->getJamBerangkat(),
+            'harga'             => $d->getHarga(),
+            'is_full'           => $d->getIsFull(),
+            'nama_armada'       => $d->getArmada()?->getNamaArmada(),
+            'jumlah_seat'       => $d->getArmada()?->getJumlahSeat(),
+            'tipe_seat'         => $d->getArmada()?->getTipeSeat(),
         ]);
     }
 
@@ -128,9 +132,9 @@ class TiketController
 
         header('Content-Type: application/json');
         echo json_encode([
-            'taken'      => $takenSeats,
-            'total'      => $jumlahSeat,
-            'tipe_seat'  => $tipeSeat,
+            'taken'     => $takenSeats,
+            'total'     => $jumlahSeat,
+            'tipe_seat' => $tipeSeat,
         ]);
     }
 }

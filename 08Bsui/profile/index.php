@@ -9,7 +9,7 @@ $profileEmail = $profile?->getEmail()  ?? null;
 $profileTelp  = $profile?->getNoTelp() ?? null;
 $profileAlamat = $profile?->getAlamat() ?? null;
 $initials     = strtoupper(substr($profileNama, 0, 2));
-$roleLabels   = ['admin' => '👤 Admin', 'admin_tu' => '🗂 Admin TU', 'pelanggan' => '👥 Pelanggan', 'kepala_sekolah' => '🎓 Kepala Sekolah'];
+$roleLabels   = ['admin' => '👤 Admin', 'admin' => '🗂 Admin TU', 'pelanggan' => '👥 Pelanggan', 'pimpinan' => '🎓 Pimpinan'];
 $roleLabel    = $roleLabels[$role] ?? ucfirst($role);
 ?>
 <main class="page-content">

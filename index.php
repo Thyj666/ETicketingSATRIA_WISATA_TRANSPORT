@@ -13,13 +13,13 @@ define('JWT_SECRET', getenv('JWT_SECRET') ?: 'SATRIA_WISATA_TRANSPORT');
 spl_autoload_register(function (string $class): void {
     // Mapping namespace ke folder
     $namespaceMap = [
-        'Domain\\' => '02Domain/',
-        'Base\\' => '01Base/',
-        'Shared\\' => '03Shared/',
-        'Application\\' => '04Application/',
+        'Domain\\'         => '02Domain/',
+        'Base\\'           => '01Base/',
+        'Shared\\'         => '03Shared/',
+        'Application\\'    => '04Application/',
         'Infrastructure\\' => '05Infrastructure/',
-        'WebApi\\' => '06WebApi/',
-        'Client\\' => '07Client/',
+        'WebApi\\'         => '06WebApi/',
+        'Client\\'         => '07Client/',
     ];
 
     $relativePath = null;
@@ -86,15 +86,12 @@ function getBasePath(): string
     $scriptName = $_SERVER['SCRIPT_NAME'];
     $scriptDir = dirname($scriptName);
 
-    // Jika script berada di root, base path adalah root
     if ($scriptDir === '/' || $scriptDir === '\\') {
         return '';
     }
 
-    // Normalisasi base path
     $basePath = rtrim($scriptDir, '/');
 
-    // Cek apakah ada konfigurasi manual dari environment
     if (getenv('APP_BASE_PATH')) {
         $basePath = rtrim(getenv('APP_BASE_PATH'), '/');
     }
@@ -136,62 +133,57 @@ $path = strtok($path, '?'); // Remove query string
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 // Route map: [method, path] => [controller, action]
+// Role: admin | pelanggan | pimpinan
 $routes = [
     // Auth
-    'GET:/'                           => ['AuthController', 'loginPage'],
-    'GET:/login'                      => ['AuthController', 'loginPage'],
-    'POST:/login'                     => ['AuthController', 'login'],
-    'GET:/logout'                     => ['AuthController', 'logout'],
+    'GET:/'                                => ['AuthController', 'loginPage'],
+    'GET:/login'                           => ['AuthController', 'loginPage'],
+    'POST:/login'                          => ['AuthController', 'login'],
+    'GET:/logout'                          => ['AuthController', 'logout'],
+
+    // Register (hanya untuk pelanggan baru)
+    'GET:/register'                        => ['AuthController', 'registerPage'],
+    'POST:/register'                       => ['AuthController', 'register'],
 
     // Dashboard
-    'GET:/dashboard'                  => ['DashboardController', 'index'],
+    'GET:/dashboard'                       => ['DashboardController', 'index'],
 
-    // Admin
-    'GET:/master/admin'               => ['AdminController', 'index'],
-    'POST:/master/admin/create'       => ['AdminController', 'create'],
-    'POST:/master/admin/update'       => ['AdminController', 'update'],
-    'POST:/master/admin/delete'       => ['AdminController', 'delete'],
-    'GET:/master/admin/get'           => ['AdminController', 'getById'],
+    // Master - Admin (hanya role: admin)
+    'GET:/master/admin'                    => ['AdminController', 'index'],
+    'POST:/master/admin/create'            => ['AdminController', 'create'],
+    'POST:/master/admin/update'            => ['AdminController', 'update'],
+    'POST:/master/admin/delete'            => ['AdminController', 'delete'],
+    'GET:/master/admin/get'                => ['AdminController', 'getById'],
 
-    // Pelanggan
-    'GET:/master/pelanggan'           => ['PelangganController', 'index'],
-    'POST:/master/pelanggan/create'   => ['PelangganController', 'create'],
-    'POST:/master/pelanggan/update'   => ['PelangganController', 'update'],
-    'POST:/master/pelanggan/delete'   => ['PelangganController', 'delete'],
-    'GET:/master/pelanggan/get'       => ['PelangganController', 'getById'],
+    // Master - Pelanggan (hanya role: admin)
+    'GET:/master/pelanggan'                => ['PelangganController', 'index'],
+    'POST:/master/pelanggan/create'        => ['PelangganController', 'create'],
+    'POST:/master/pelanggan/update'        => ['PelangganController', 'update'],
+    'POST:/master/pelanggan/delete'        => ['PelangganController', 'delete'],
+    'GET:/master/pelanggan/get'            => ['PelangganController', 'getById'],
 
-    // Pimpinan
-    'GET:/master/pimpinan'            => ['PimpinanController', 'index'],
-    'POST:/master/pimpinan/create'    => ['PimpinanController', 'create'],
-    'POST:/master/pimpinan/update'    => ['PimpinanController', 'update'],
-    'POST:/master/pimpinan/delete'    => ['PimpinanController', 'delete'],
-    'GET:/master/pimpinan/get'        => ['PimpinanController', 'getById'],
+    // Master - Pimpinan (hanya role: admin)
+    'GET:/master/pimpinan'                 => ['PimpinanController', 'index'],
+    'POST:/master/pimpinan/create'         => ['PimpinanController', 'create'],
+    'POST:/master/pimpinan/update'         => ['PimpinanController', 'update'],
+    'POST:/master/pimpinan/delete'         => ['PimpinanController', 'delete'],
+    'GET:/master/pimpinan/get'             => ['PimpinanController', 'getById'],
 
-    // Register
-    'GET:/register'                   => ['AuthController', 'registerPage'],
-    'POST:/register'                  => ['AuthController', 'register'],
+    // Master - User (hanya role: admin)
+    'GET:/master/user'                     => ['UserController', 'index'],
+    'POST:/master/user/create'             => ['UserController', 'create'],
+    'POST:/master/user/update'             => ['UserController', 'update'],
+    'POST:/master/user/delete'             => ['UserController', 'delete'],
+    'GET:/master/user/get'                 => ['UserController', 'getById'],
 
-    // User
-    'GET:/master/user'                => ['UserController', 'index'],
-    'POST:/master/user/create'        => ['UserController', 'create'],
-    'POST:/master/user/update'        => ['UserController', 'update'],
-    'POST:/master/user/delete'        => ['UserController', 'delete'],
-    'GET:/master/user/get'            => ['UserController', 'getById'],
+    // Master - Armada (hanya role: admin)
+    'GET:/master/armada'                   => ['ArmadaController', 'index'],
+    'POST:/master/armada/create'           => ['ArmadaController', 'create'],
+    'POST:/master/armada/update'           => ['ArmadaController', 'update'],
+    'POST:/master/armada/delete'           => ['ArmadaController', 'delete'],
+    'GET:/master/armada/get'               => ['ArmadaController', 'getById'],
 
-    // Laporan
-    'GET:/transaksi/laporan'             => ['LaporanController', 'index'],
-    'GET:/transaksi/laporan/export'      => ['LaporanController', 'export'],
-    'GET:/transaksi/laporan/absensi'     => ['LaporanController', 'absensi'],
-
-    // Armada
-    'GET:/master/armada'              => ['ArmadaController', 'index'],
-    'POST:/master/armada/create'      => ['ArmadaController', 'create'],
-    'POST:/master/armada/update'      => ['ArmadaController', 'update'],
-    'POST:/master/armada/delete'      => ['ArmadaController', 'delete'],
-    'GET:/master/armada/get'          => ['ArmadaController', 'getById'],
-
-
-    // Tiket
+    // Tiket (semua role bisa lihat; admin bisa CRUD)
     'GET:/transaksi/tiket'                 => ['TiketController', 'index'],
     'POST:/transaksi/tiket/create'         => ['TiketController', 'create'],
     'POST:/transaksi/tiket/update'         => ['TiketController', 'update'],
@@ -199,16 +191,20 @@ $routes = [
     'GET:/transaksi/tiket/get'             => ['TiketController', 'getById'],
     'GET:/transaksi/tiket/seats'           => ['TiketController', 'getSeats'],
 
-    // Pemesanan
+    // Pemesanan (pelanggan: buat & lihat milik sendiri; admin: lihat semua)
     'GET:/transaksi/pemesanan'             => ['PemesananController', 'index'],
     'POST:/transaksi/pemesanan/create'     => ['PemesananController', 'create'],
     'GET:/transaksi/pemesanan/bayar'       => ['PemesananController', 'bayar'],
     'POST:/transaksi/pemesanan/notifikasi' => ['PemesananController', 'notifikasi'],
     'GET:/transaksi/pemesanan/status'      => ['PemesananController', 'statusPembayaran'],
 
-    // Profile
-    'GET:/profile'                    => ['ProfileController', 'index'],
-    'POST:/profile/update'            => ['ProfileController', 'update'],
+    // Laporan (hanya role: admin & pimpinan)
+    'GET:/transaksi/laporan'               => ['LaporanController', 'index'],
+    'GET:/transaksi/laporan/export'        => ['LaporanController', 'export'],
+
+    // Profile (semua user yang login)
+    'GET:/profile'                         => ['ProfileController', 'index'],
+    'POST:/profile/update'                 => ['ProfileController', 'update'],
 ];
 
 // Debug mode (set false di production)
@@ -256,17 +252,17 @@ if (!$routeMatch) {
 
 // Map controller name to class
 $controllerMap = [
-    'AuthController'       => \WebApi\AuthController::class,
-    'DashboardController'  => \WebApi\DashboardController::class,
-    'UserController'       => \WebApi\Master\User\UserController::class,
-    'LaporanController'    => \WebApi\Transaction\Laporan\LaporanController::class,
-    'ProfileController'    => \WebApi\ProfileController::class,
-    'AdminController'      => \WebApi\Master\Admin\AdminController::class,
-    'PelangganController'  => \WebApi\Master\Pelanggan\PelangganController::class,
-    'PimpinanController'   => \WebApi\Master\Pimpinan\PimpinanController::class,
-    'ArmadaController'     => \WebApi\Master\Armada\ArmadaController::class,
-    'TiketController'      => \WebApi\Transaction\Tiket\TiketController::class,
-    'PemesananController'  => \WebApi\Transaction\Pemesanan\PemesananController::class,
+    'AuthController'      => \WebApi\AuthController::class,
+    'DashboardController' => \WebApi\DashboardController::class,
+    'UserController'      => \WebApi\Master\User\UserController::class,
+    'LaporanController'   => \WebApi\Transaction\Laporan\LaporanController::class,
+    'ProfileController'   => \WebApi\ProfileController::class,
+    'AdminController'     => \WebApi\Master\Admin\AdminController::class,
+    'PelangganController' => \WebApi\Master\Pelanggan\PelangganController::class,
+    'PimpinanController'  => \WebApi\Master\Pimpinan\PimpinanController::class,
+    'ArmadaController'    => \WebApi\Master\Armada\ArmadaController::class,
+    'TiketController'     => \WebApi\Transaction\Tiket\TiketController::class,
+    'PemesananController' => \WebApi\Transaction\Pemesanan\PemesananController::class,
 ];
 
 $className = $controllerMap[$controllerName] ?? null;
@@ -281,14 +277,27 @@ if (!$className) {
 function requireControllerFile(string $className): void
 {
     $basePath = BASE_PATH;
+
+    // Mapping khusus untuk controller yang folder-nya berbeda dari namespace-nya
+    $pathOverrides = [
+        'WebApi/Transaction/Pemesanan/PemesananController' => '06WebApi/Transaction/Pesanan/PemesananController.php',
+    ];
+
     $classPath = str_replace('\\', '/', $className);
-    $filePath = $basePath . '/06WebApi/' . preg_replace('/^WebApi\\//', '', $classPath) . '.php';
+    $classPath = preg_replace('/^WebApi\//', '', $classPath);
+
+    $overrideKey = 'WebApi/' . $classPath;
+    if (isset($pathOverrides[$overrideKey])) {
+        $filePath = $basePath . '/' . $pathOverrides[$overrideKey];
+    } else {
+        $filePath = $basePath . '/06WebApi/' . $classPath . '.php';
+    }
 
     if (file_exists($filePath)) {
         require_once $filePath;
     } else {
-        // Alternative path
-        $altPath = $basePath . '/' . $classPath . '.php';
+        // Alternative path: coba langsung
+        $altPath = $basePath . '/' . str_replace('\\', '/', $className) . '.php';
         if (file_exists($altPath)) {
             require_once $altPath;
         }

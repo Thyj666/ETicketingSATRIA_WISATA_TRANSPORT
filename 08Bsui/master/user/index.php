@@ -4,7 +4,7 @@ $pageTitle  = 'User';
 $activeMenu = 'master/user';
 require BASE_PATH . '/08Bsui/layouts/app.php';
 
-$roles = ['admin' => '👤 Admin', 'admin_tu' => '🗂 Admin TU', 'pelanggan' => '👥 Pelanggan', 'kepala_sekolah' => '🎓 Kepala Sekolah'];
+$roles = ['admin' => '👤 Admin', 'pelanggan' => '👥 Pelanggan', 'pimpinan' => '🏆 Pimpinan'];
 ?>
 <main class="page-content">
     <div class="page-header">

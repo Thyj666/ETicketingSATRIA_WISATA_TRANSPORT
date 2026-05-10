@@ -10,7 +10,7 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
             <h1 class="page-title">🎫 Tiket Perjalanan</h1>
             <p class="page-desc">Temukan dan pesan tiket bus sesuai rute Anda</p>
         </div>
-        <?php if ($role === 'admin_tu'): ?>
+        <?php if ($role === 'admin'): ?>
             <button class="btn btn-primary" onclick="openModal('modal-create')">＋ Tambah Tiket</button>
         <?php endif; ?>
     </div>
@@ -74,12 +74,12 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
                             <div class="ticket-price">Rp <?= $harga ?></div>
                         </div>
                         <div class="ticket-card-actions">
-                            <?php if (!$isFull && !in_array($role, ['admin_tu', 'kepala_sekolah'])): ?>
+                            <?php if (!$isFull && !in_array($role, ['admin', 'pimpinan'])): ?>
                                 <button class="btn btn-primary btn-sm" onclick="openSeatModal(<?= $t->getId() ?>, '<?= htmlspecialchars($t->getTujuan()) ?>')">
                                     Pilih Kursi
                                 </button>
                             <?php endif; ?>
-                            <?php if ($role === 'admin_tu'): ?>
+                            <?php if ($role === 'admin'): ?>
                                 <button class="btn btn-ghost btn-sm btn-icon" title="Edit" onclick="loadEdit(<?= $t->getId() ?>)">✏️</button>
                                 <form method="POST" action="<?= url('/transaksi/tiket/delete') ?>" data-confirm="Hapus tiket ini?" style="display:inline">
                                     <input type="hidden" name="id" value="<?= $t->getId() ?>">
@@ -154,7 +154,7 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
     </div>
 </div>
 
-<?php if ($role === 'admin_tu'): ?>
+<?php if ($role === 'admin'): ?>
     <!-- Create Modal -->
     <div class="modal" id="modal-create">
         <div class="modal-box">

@@ -30,7 +30,7 @@ class PemesananController
         Auth::requireAuth();
         $sessionUser = Auth::user();
         $role        = $sessionUser['role'] ?? '';
-        $isPelanggan = !in_array($role, ['admin_tu', 'kepala_sekolah']);
+        $isPelanggan = $role === 'pelanggan';
 
         $tiketId = (int)($_GET['tiket_id'] ?? 0);
         $status  = $_GET['status'] ?? '';

@@ -4,7 +4,7 @@ $pageTitle  = 'Pemesanan';
 $activeMenu = 'transaksi/pemesanan';
 require BASE_PATH . '/08Bsui/layouts/app.php';
 
-$isAdmin = in_array($role, ['admin', 'admin_tu']);
+$isAdmin = $role === 'admin';
 $statusLabels = [
     'pending'   => ['label' => 'Menunggu Bayar', 'class' => 'badge-warning'],
     'confirmed' => ['label' => 'Terkonfirmasi',  'class' => 'badge-success'],

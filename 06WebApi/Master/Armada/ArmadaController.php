@@ -28,7 +28,8 @@ class ArmadaController
 
     public function index(): void
     {
-        Auth::requireRole(['admin_tu']);
+        // Hanya admin yang bisa mengelola armada
+        Auth::requireRole(['admin']);
         $search = $_GET['search'] ?? '';
         $status = $_GET['status'] ?? '';
         $list   = $this->getList->execute(new GetArmadaByListRequest($search, $status))->data;
@@ -39,7 +40,7 @@ class ArmadaController
 
     public function create(): void
     {
-        Auth::requireRole(['admin_tu']);
+        Auth::requireRole(['admin']);
         $platNomor  = trim($_POST['plat_nomor'] ?? '');
         $namaArmada = trim($_POST['nama_armada'] ?? '');
         $tipeSeat   = trim($_POST['tipe_seat'] ?? '2-2');
@@ -56,7 +57,7 @@ class ArmadaController
 
     public function update(): void
     {
-        Auth::requireRole(['admin_tu']);
+        Auth::requireRole(['admin']);
         $id         = (int)($_POST['id'] ?? 0);
         $platNomor  = trim($_POST['plat_nomor'] ?? '');
         $namaArmada = trim($_POST['nama_armada'] ?? '');
@@ -74,10 +75,10 @@ class ArmadaController
 
     public function delete(): void
     {
-        Auth::requireRole(['admin_tu']);
-        $id = (int)($_POST['id'] ?? 0);
+        Auth::requireRole(['admin']);
+        $id      = (int)($_POST['id'] ?? 0);
         $actorId = Auth::id();
-        $res = $this->deleteCmd->execute(new DeleteArmadaRequest($id), $actorId);
+        $res     = $this->deleteCmd->execute(new DeleteArmadaRequest($id), $actorId);
         $_SESSION['flash'] = ['type' => $res->success ? 'success' : 'danger', 'msg' => $res->message];
         header('Location: ' . url('/master/armada'));
         exit;
@@ -85,17 +86,17 @@ class ArmadaController
 
     public function getById(): void
     {
-        Auth::requireRole(['admin_tu']);
+        Auth::requireRole(['admin']);
         $id  = (int)($_GET['id'] ?? 0);
         $res = $this->getById->execute(new GetArmadaByIdRequest($id));
         header('Content-Type: application/json');
         echo json_encode($res->data ? [
-            'id' => $res->data->getId(),
-            'plat_nomor' => $res->data->getPlatNomor(),
+            'id'          => $res->data->getId(),
+            'plat_nomor'  => $res->data->getPlatNomor(),
             'nama_armada' => $res->data->getNamaArmada(),
-            'tipe_seat' => $res->data->getTipeSeat(),
+            'tipe_seat'   => $res->data->getTipeSeat(),
             'jumlah_seat' => $res->data->getJumlahSeat(),
-            'status' => $res->data->getStatus(),
+            'status'      => $res->data->getStatus(),
         ] : null);
     }
 }

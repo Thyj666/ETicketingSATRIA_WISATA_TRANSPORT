@@ -8,7 +8,7 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
     <div class="page-header">
         <div>
             <h1 class="page-title">🎓 Manajemen Pimpinan</h1>
-            <p class="page-desc">Kelola akun kepala sekolah / pimpinan</p>
+            <p class="page-desc">Kelola akun Pimpinan</p>
         </div>
         <button class="btn btn-primary" onclick="openModal('modal-create')">＋ Tambah Pimpinan</button>
     </div>

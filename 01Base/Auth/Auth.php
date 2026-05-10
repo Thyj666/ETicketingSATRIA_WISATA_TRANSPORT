@@ -7,25 +7,12 @@ namespace Base\Auth;
 /**
  * Auth facade — diinisialisasi sekali di bootstrap (index.php),
  * lalu dipakai di seluruh controller dan view.
- *
- * Contoh pemakaian di controller:
- *   Auth::check()           → bool (sudah login atau belum)
- *   Auth::user()            → ?array (seluruh payload JWT)
- *   Auth::id()              → ?int
- *   Auth::getName()          → ?string
- *   Auth::getRole()            → ?string
- *   Auth::requireAuth()     → redirect ke /login jika belum login
- *   Auth::requireRole([])   → 403 jika role tidak sesuai
  */
 class Auth
 {
     private static ?array $user = null;
     private static string $secret = '';
 
-    /**
-     * Inisialisasi: baca & validasi JWT dari cookie.
-     * Dipanggil satu kali di index.php setelah JWT_SECRET didefinisikan.
-     */
     public static function init(string $secret): void
     {
         self::$secret = $secret;
@@ -35,19 +22,16 @@ class Auth
         }
     }
 
-    /** Kembalikan seluruh payload JWT (atau null jika belum login) */
     public static function user(): ?array
     {
         return self::$user;
     }
 
-    /** Apakah user sudah terautentikasi? */
     public static function check(): bool
     {
         return self::$user !== null;
     }
 
-    /** ID user dari payload JWT */
     public static function id(): ?int
     {
         return isset(self::$user['id']) ? (int)self::$user['id'] : null;
@@ -58,18 +42,11 @@ class Auth
         return self::$user['nama'] ?? null;
     }
 
-    /** Role user dari payload JWT */
     public static function getRole(): ?string
     {
         return self::$user['role'] ?? null;
     }
 
-    /**
-     * Set JWT cookie setelah login berhasil.
-     *
-     * @param array $payload        Data user yang akan disimpan di token
-     * @param int   $expireSeconds  Durasi token (default 8 jam)
-     */
     public static function issue(array $payload, int $expireSeconds = 28800): void
     {
         $token = JwtHelper::encode($payload, self::$secret, $expireSeconds);
@@ -79,11 +56,9 @@ class Auth
             'httponly' => true,
             'samesite' => 'Strict',
         ]);
-        // Populate in-memory user agar langsung bisa dipakai di request ini
         self::$user = JwtHelper::decode($token, self::$secret);
     }
 
-    /** Hapus JWT cookie saat logout */
     public static function clearToken(): void
     {
         setcookie('jwt_token', '', [
@@ -96,21 +71,19 @@ class Auth
     }
 
     /**
-     * Guard: redirect ke /login jika belum terautentikasi.
-     * Dipanggil di awal action controller yang butuh login.
+     * BUG FIX: Gunakan fungsi url() global dari index.php agar base path konsisten.
+     * Sebelumnya: dirname(SCRIPT_NAME) menghasilkan '/' di root → redirect ke '//login'.
      */
     public static function requireAuth(): void
     {
         if (!self::check()) {
-            $base = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/');
-            header('Location: ' . $base . '/login');
+            header('Location: ' . url('/login'));
             exit;
         }
     }
 
     /**
      * Guard: tampilkan 403 jika role tidak termasuk dalam $allowedRoles.
-     * Secara implisit juga memanggil requireAuth().
      *
      * @param string[] $allowedRoles
      */

@@ -17,8 +17,13 @@ use Base\User\Enums\Role;
 class UserEntity extends AuditableEntity
 {
     // ------------------------------------------------------------------
-    // Column
+    // Columns
     // ------------------------------------------------------------------
+
+    // BUG FIX: Tambah field 'nama' — dibutuhkan oleh AuthController::login()
+    // yang memanggil $user->getNama() untuk JWT payload, dan oleh INSERT register.
+    #[Column(type: 'varchar', length: 120, nullable: true)]
+    private ?string $nama = null;
 
     #[Column(type: 'varchar', length: 60, nullable: false)]
     private string $username;
@@ -35,6 +40,11 @@ class UserEntity extends AuditableEntity
     // ------------------------------------------------------------------
     // Getters
     // ------------------------------------------------------------------
+
+    public function getNama(): ?string
+    {
+        return $this->nama;
+    }
 
     public function getUsername(): string
     {
@@ -59,6 +69,11 @@ class UserEntity extends AuditableEntity
     // ------------------------------------------------------------------
     // Setters
     // ------------------------------------------------------------------
+
+    public function setNama(?string $v): void
+    {
+        $this->nama = $v;
+    }
 
     public function setUsername(string $v): void
     {
@@ -103,14 +118,15 @@ class UserEntity extends AuditableEntity
         string $username,
         string $plainPassword,
         string $role,
+        ?string $nama = null,
         ?int $createdBy = null
     ): self {
         $entity = new self();
 
+        $entity->setNama($nama);
         $entity->setUsername($username);
         $entity->hashPassword($plainPassword);
         $entity->setRole($role);
-
         $entity->markCreated($createdBy);
 
         return $entity;

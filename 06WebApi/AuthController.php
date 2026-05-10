@@ -17,8 +17,11 @@ class AuthController
             $this->redirect('/dashboard');
             return;
         }
-        $error = $_SESSION['flash_error'] ?? null;
-        unset($_SESSION['flash_error']);
+        // BUG FIX: $error dan $success harus dibaca DI SINI sebelum require view,
+        // agar variabel tersedia di scope yang di-require.
+        $error   = $_SESSION['flash_error'] ?? null;
+        $success = $_SESSION['flash_success'] ?? null;
+        unset($_SESSION['flash_error'], $_SESSION['flash_success']);
         require BASE_PATH . '/08Bsui/auth/login.php';
     }
 
@@ -28,6 +31,7 @@ class AuthController
             $this->redirect('/dashboard');
             return;
         }
+        // BUG FIX: sama — $error harus di-set sebelum require
         $error = $_SESSION['flash_error'] ?? null;
         unset($_SESSION['flash_error']);
         require BASE_PATH . '/08Bsui/auth/register.php';
@@ -70,7 +74,7 @@ class AuthController
 
         // Create new pelanggan user
         try {
-            $db = \Infrastructure\AppDbContext::getInstance();
+            $db   = \Infrastructure\AppDbContext::getInstance();
             $hash = password_hash($password, PASSWORD_BCRYPT);
             $now  = date('Y-m-d H:i:s');
 
@@ -79,7 +83,6 @@ class AuthController
                  VALUES (?, ?, ?, ?, ?, 'pelanggan', 1, ?, ?)",
                 [$nama, $username, $hash, $email ?: null, $noTelp ?: null, $now, $now]
             );
-            $userId = $db->lastInsertId();
 
             $_SESSION['flash_success'] = 'Registrasi berhasil! Silakan login.';
             $this->redirect('/login');
@@ -109,10 +112,10 @@ class AuthController
         }
 
         Auth::issue([
-            'id'           => $user->getId(),
-            'nama'         => $user->getNama(),
-            'username'     => $user->getUsername(),
-            'role'         => $user->getRole(),
+            'id'       => $user->getId(),
+            'nama'     => $user->getNama(),
+            'username' => $user->getUsername(),
+            'role'     => $user->getRole(),
         ]);
 
         $this->redirect('/dashboard');
@@ -125,10 +128,15 @@ class AuthController
         $this->redirect('/login');
     }
 
+    /**
+     * BUG FIX: redirect menggunakan fungsi url() global dari index.php
+     * yang sudah handle base path dengan benar.
+     * Sebelumnya: dirname(SCRIPT_NAME) menghasilkan '/' di root sehingga
+     * redirect menjadi '//login' (double slash) yang gagal di beberapa server.
+     */
     private function redirect(string $path): void
     {
-        $base = dirname($_SERVER['SCRIPT_NAME'] ?? '');
-        header('Location: ' . rtrim($base, '/') . $path);
+        header('Location: ' . url($path));
         exit;
     }
 }

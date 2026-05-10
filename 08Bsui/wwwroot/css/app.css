@@ -2068,3 +2068,430 @@ body.auth-page {
   .stat-grid { grid-template-columns: 1fr; }
   .form-panel { padding: 36px 28px; }
 }
+/* ================================================================
+   COMPATIBILITY & MISSING CLASSES — Added to fix view/CSS mismatch
+   ================================================================ */
+
+/* ---- page-desc alias (views use page-desc, CSS had page-subtitle) ---- */
+.page-desc {
+  font-size: .85rem;
+  color: var(--gray-500);
+  margin-top: 4px;
+}
+
+/* ---- page-header-meta ---- */
+.page-header-meta {
+  font-size: .84rem;
+  color: var(--gray-500);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ---- stat-card BEM variants (views use stat-card--blue etc) ---- */
+.stat-card.stat-card--blue  { border-left: 3px solid var(--blue); }
+.stat-card.stat-card--amber { border-left: 3px solid var(--amber); }
+.stat-card.stat-card--green { border-left: 3px solid var(--green); }
+.stat-card.stat-card--navy  { border-left: 3px solid var(--navy); }
+
+/* stat-card inner elements used in views */
+.stat-card-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  background: var(--gray-100);
+}
+.stat-card--blue  .stat-card-icon { background: var(--blue-dim); }
+.stat-card--amber .stat-card-icon { background: var(--amber-glow); }
+.stat-card--green .stat-card-icon { background: var(--green-dim); }
+.stat-card--navy  .stat-card-icon { background: rgba(13,27,42,.08); }
+
+.stat-card-body  { flex: 1; }
+.stat-card-value {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1;
+}
+.stat-card-label { font-size: .78rem; color: var(--gray-500); margin-top: 4px; }
+
+/* ---- section-title ---- */
+.section-title {
+  font-family: 'Sora', sans-serif;
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 14px;
+  margin-top: 8px;
+}
+
+/* ---- quick-links grid ---- */
+.quick-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.quick-link-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 22px 16px;
+  text-align: center;
+  transition: var(--transition);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: var(--gray-700);
+}
+.quick-link-card:hover {
+  border-color: var(--amber);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  color: var(--navy);
+}
+.quick-link-icon { font-size: 1.8rem; line-height: 1; }
+.quick-link-label { font-size: .82rem; font-weight: 600; color: var(--gray-700); line-height: 1.3; }
+
+/* ---- table-card wrapper ---- */
+.table-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+/* ---- data-table alias (maps to .table styles) ---- */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .86rem;
+}
+.data-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  background: var(--gray-100);
+  border-bottom: 1px solid var(--gray-200);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: middle;
+  color: var(--gray-700);
+}
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover td { background: rgba(245,158,11,.03); }
+
+/* ---- td helpers ---- */
+.td-num {
+  width: 48px;
+  color: var(--gray-400);
+  font-size: .8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.td-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.td-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--amber);
+  color: var(--navy);
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: .76rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.td-action {
+  width: 90px;
+  white-space: nowrap;
+}
+.td-action .table-actions,
+.td-action { display: flex; gap: 6px; align-items: center; }
+
+.th-action { text-align: center !important; }
+
+/* ---- filter-form, filter-input ---- */
+.filter-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.filter-input {
+  min-width: 140px;
+  max-width: 200px;
+  padding: 9px 13px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 8px;
+  font-size: .86rem;
+  font-family: inherit;
+  color: var(--gray-700);
+  background: var(--white);
+  outline: none;
+  transition: var(--transition);
+}
+.filter-input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px var(--amber-glow); }
+select.filter-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+}
+
+/* ---- btn-secondary ---- */
+.btn-secondary {
+  background: var(--white);
+  color: var(--gray-700);
+  border: 1.5px solid var(--gray-300);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: .85rem;
+  font-weight: 500;
+  transition: var(--transition);
+  line-height: 1;
+  white-space: nowrap;
+  font-family: inherit;
+  cursor: pointer;
+}
+.btn-secondary:hover { background: var(--gray-100); border-color: var(--gray-400); }
+
+/* ---- form-input alias (maps to form-control) ---- */
+.form-input {
+  display: block;
+  width: 100%;
+  padding: 9px 13px;
+  font-size: .88rem;
+  font-family: inherit;
+  color: var(--gray-700);
+  background: var(--white);
+  border: 1.5px solid var(--gray-200);
+  border-radius: 8px;
+  transition: var(--transition);
+  outline: none;
+  line-height: 1.5;
+}
+.form-input:focus {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px var(--amber-glow);
+}
+.form-input::placeholder { color: var(--gray-300); }
+select.form-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+textarea.form-input { resize: vertical; min-height: 90px; }
+
+/* ---- badge-secondary, badge-outline, badge-warning ---- */
+.badge-secondary { background: var(--gray-200); color: var(--gray-500); }
+.badge-warning   { background: #fef3c7; color: #92400e; }
+.badge-outline {
+  background: transparent;
+  border: 1.5px solid var(--gray-300);
+  color: var(--gray-700);
+  font-family: 'DM Sans', monospace;
+  font-size: .75rem;
+  padding: 2px 8px;
+}
+
+/* ---- empty-state-icon (views use this, CSS had empty-icon) ---- */
+.empty-state-icon { font-size: 48px; margin-bottom: 16px; opacity: .5; display: block; }
+.empty-state h3 {
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: 6px;
+}
+.empty-state p { font-size: .85rem; color: var(--gray-500); }
+
+/* ================================================================
+   MODAL — Unified system using .modal.active
+   JS uses openModal(id) → adds class "active" directly to .modal
+   ================================================================ */
+
+/* The .modal element IS the backdrop+centering wrapper */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,27,45,.55);
+  backdrop-filter: blur(4px);
+  z-index: 900;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal.active { display: flex; }
+
+/* .modal-dialog is the white box (used in master pages) */
+.modal-dialog {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: modalIn .2s ease;
+  overflow: hidden;
+}
+
+/* .modal-box is another white box variant (used in tiket page) */
+.modal-box {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: modalIn .2s ease;
+  overflow: hidden;
+}
+.modal-box-wide { max-width: 720px; }
+
+/* Keep .modal-backdrop.open working for any legacy usage */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,27,45,.55);
+  backdrop-filter: blur(4px);
+  z-index: 900;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-backdrop.open { display: flex; }
+/* inner .modal inside .modal-backdrop is the white box */
+.modal-backdrop > .modal {
+  position: static;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================================================================
+   SEAT MAP (ticket page) — extended from base styles
+   ================================================================ */
+.tiket-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.ticket-full { opacity: .65; }
+
+.ticket-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+.badge-available { background: var(--green-dim); color: var(--green); }
+.badge-full      { background: var(--red-dim);   color: var(--red); }
+
+.ticket-origin, .ticket-dest { flex: 1; }
+.ticket-time { font-size: .75rem; color: rgba(255,255,255,.55); margin-top: 4px; }
+.ticket-armada-info {
+  font-size: .72rem;
+  color: rgba(255,255,255,.45);
+  margin-top: 10px;
+  display: flex; gap: 6px;
+}
+.ticket-card-actions { display: flex; gap: 8px; align-items: center; }
+
+/* Seat map visual elements */
+.bus-visual-wrap { position: relative; }
+.bus-windshield {
+  height: 12px;
+  background: linear-gradient(90deg, var(--gray-200), var(--gray-300), var(--gray-200));
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.bus-wheel-row { display: flex; gap: 24px; justify-content: center; padding: 6px 0; }
+.bus-wheel {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--gray-400);
+  border: 3px solid var(--gray-600, #475569);
+}
+
+.seat-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.seat-legend-item { display: flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--gray-700); }
+.seat-sample {
+  width: 20px; height: 20px;
+  border-radius: 4px;
+  border: 2px solid var(--gray-200);
+}
+.seat-available { background: var(--white); border-color: var(--gray-300); cursor: pointer; }
+.seat-taken     { background: var(--red-dim); border-color: var(--red); cursor: not-allowed; }
+.seat-selected  { background: var(--amber); border-color: var(--amber-dark); }
+.seat-driver    { background: var(--navy); border-color: var(--navy-light); }
+
+.seats-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--seat-cols, 4), 36px);
+  gap: 6px;
+  justify-content: center;
+  margin: 12px 0;
+}
+.driver-row { display: flex; justify-content: flex-end; margin-bottom: 8px; padding-right: 4px; }
+
+.seat-loading { text-align: center; padding: 24px; color: var(--gray-500); font-size: .86rem; }
+.seat-selected-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .86rem;
+  color: var(--gray-700);
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--amber-glow);
+  border-radius: 8px;
+  border: 1px solid rgba(245,158,11,.25);
+}
+
+.seat.seat-aisle { margin-left: 12px; }

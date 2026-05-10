@@ -38,16 +38,22 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
     <?php else: ?>
         <div class="tiket-grid">
             <?php foreach ($list as $t):
-                $armada   = $t->getArmada();
-                $isFull   = $t->getIsFull();
-                $harga    = number_format($t->getHarga(), 0, ',', '.');
-                $tgl      = $t->getTanggalBerangkat() ? date('d M Y', strtotime($t->getTanggalBerangkat())) : '—';
-                $jam      = $t->getJamBerangkat() ? substr($t->getJamBerangkat(), 0, 5) : '—';
+                $armada          = $t->getArmada();
+                $isFull          = $t->getIsFull();
+                $statusPerjalanan = $t->getStatusPerjalanan();
+                $harga           = number_format($t->getHarga(), 0, ',', '.');
+                $tgl             = $t->getTanggalBerangkat() ? date('d M Y', strtotime($t->getTanggalBerangkat())) : '—';
+                $jam             = $t->getJamBerangkat() ? substr($t->getJamBerangkat(), 0, 5) : '—';
             ?>
-                <div class="ticket-card <?= $isFull ? 'ticket-full' : '' ?>">
+        <div class="ticket-card <?= $isFull ? 'ticket-full' : '' ?> <?= $statusPerjalanan === 'selesai' ? 'ticket-selesai' : '' ?>">
                     <div class="ticket-card-top">
-                        <div class="ticket-status-badge <?= $isFull ? 'badge-full' : 'badge-available' ?>">
-                            <?= $isFull ? '🔴 Penuh' : '🟢 Tersedia' ?>
+                        <div class="ticket-badges">
+                            <div class="ticket-status-badge <?= $isFull ? 'badge-full' : 'badge-available' ?>">
+                                <?= $isFull ? '🔴 Penuh' : '🟢 Tersedia' ?>
+                            </div>
+                            <div class="ticket-status-badge <?= $statusPerjalanan === 'selesai' ? 'badge-selesai' : 'badge-berlangsung' ?>">
+                                <?= $statusPerjalanan === 'selesai' ? '✅ Selesai' : '🚌 Berlangsung' ?>
+                            </div>
                         </div>
                         <div class="ticket-route">
                             <div class="ticket-origin">
@@ -74,7 +80,7 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
                             <div class="ticket-price">Rp <?= $harga ?></div>
                         </div>
                         <div class="ticket-card-actions">
-                            <?php if (!$isFull && !in_array($role, ['admin', 'pimpinan'])): ?>
+                            <?php if (!$isFull && $statusPerjalanan !== 'selesai' && !in_array($role, ['admin', 'pimpinan'])): ?>
                                 <button class="btn btn-primary btn-sm" onclick="openSeatModal(<?= $t->getId() ?>, '<?= htmlspecialchars($t->getTujuan()) ?>')">
                                     Pilih Kursi
                                 </button>
@@ -243,6 +249,14 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
                             <option value="1">Penuh</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label class="form-label">Status Perjalanan</label>
+                        <select name="status_perjalanan" id="edit-status-perjalanan" class="form-input">
+                            <option value="berlangsung">🚌 Berlangsung</option>
+                            <option value="selesai">✅ Selesai</option>
+                        </select>
+                        <small class="form-hint">Jika diubah ke <strong>Selesai</strong>, armada ini dapat dibuatkan tiket baru.</small>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-ghost" onclick="closeModal('modal-edit')">Batal</button>
@@ -331,6 +345,7 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
         document.getElementById('edit-jam').value = data.jam_berangkat || '';
         document.getElementById('edit-harga').value = data.harga;
         document.getElementById('edit-full').value = data.is_full ? '1' : '0';
+        document.getElementById('edit-status-perjalanan').value = data.status_perjalanan || 'berlangsung';
         openModal('modal-edit');
     }
 </script>

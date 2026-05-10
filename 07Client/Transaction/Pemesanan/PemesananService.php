@@ -6,6 +6,7 @@ namespace Client\Transaction\Pemesanan;
 
 use Infrastructure\AppDbContext;
 use Domain\Entities\Transaction\Pemesanan\PemesananEntity;
+use Domain\Entities\Transaction\Tiket\TiketEntity;
 use Domain\Entities\Master\Armada\ArmadaEntity;
 use Domain\Entities\Master\User\UserEntity;
 
@@ -48,9 +49,31 @@ class PemesananService
             $user = new UserEntity();
             $user->setId((int) $row['user_id']);
             $user->setNama($row['nama_penumpang']);
-            $user->setEmail($row['email_penumpang'] ?? '');
-            $user->setNoTelp($row['no_telp_penumpang'] ?? '');
             $e->setUser($user);
+        }
+
+        if (isset($row['tiket_tujuan'])) {
+            $tiket = new TiketEntity();
+            $tiket->setId((int) $row['tiket_id']);
+            $tiket->setArmadaId((int) $row['armada_id']);
+            $tiket->setTujuan($row['tiket_tujuan']);
+            $tiket->setTanggalBerangkat($row['tiket_tanggal'] ?? null);
+            $tiket->setJamBerangkat($row['tiket_jam'] ?? null);
+            $tiket->setHarga(isset($row['tiket_harga']) ? (float) $row['tiket_harga'] : null);
+            $tiket->setIsFull((bool)($row['tiket_is_full'] ?? 0));
+            $tiket->setStatusPerjalanan($row['tiket_status_perjalanan'] ?? 'berlangsung');
+            // Pasang armada ke tiket juga (untuk bayar.php yang akses $tiket->getArmada())
+            if (isset($row['nama_armada'])) {
+                $armadaForTiket = new ArmadaEntity();
+                $armadaForTiket->setId((int) $row['armada_id']);
+                $armadaForTiket->setNamaArmada($row['nama_armada']);
+                $armadaForTiket->setPlatNomor($row['plat_nomor'] ?? '');
+                $armadaForTiket->setTipeSeat($row['tipe_seat'] ?? '');
+                $armadaForTiket->setJumlahSeat((int)($row['jumlah_seat'] ?? 0));
+                $armadaForTiket->setStatus($row['armada_status'] ?? 'tersedia');
+                $tiket->setArmada($armadaForTiket);
+            }
+            $e->setTiket($tiket);
         }
 
         return $e;
@@ -60,11 +83,14 @@ class PemesananService
     {
         $sql = "SELECT p.*, 
                     a.nama_armada, a.plat_nomor, a.tipe_seat, a.jumlah_seat, a.status as armada_status,
-                    COALESCE(pl.nama, u.nama) as nama_penumpang, pl.email as email_penumpang, pl.no_telp as no_telp_penumpang
+                    COALESCE(pl.nama, u.nama) as nama_penumpang, pl.email as email_penumpang, pl.no_telp as no_telp_penumpang,
+                    t.tujuan as tiket_tujuan, t.tanggal_berangkat as tiket_tanggal, t.jam_berangkat as tiket_jam,
+                    t.harga as tiket_harga, t.is_full as tiket_is_full, t.status_perjalanan as tiket_status_perjalanan
                 FROM pemesanans p
                 LEFT JOIN armada a ON p.armada_id = a.id
                 LEFT JOIN users u ON p.user_id = u.id
                 LEFT JOIN pelanggan pl ON pl.user_id = u.id AND pl.is_deleted = 0
+                LEFT JOIN tikets t ON p.tiket_id = t.id
                 WHERE p.is_deleted = 0";
         $params = [];
         if ($userId > 0) {
@@ -88,11 +114,14 @@ class PemesananService
         $row = $this->db->fetchOne(
             "SELECT p.*, 
                 a.nama_armada, a.plat_nomor, a.tipe_seat, a.jumlah_seat, a.status as armada_status,
-                COALESCE(pl.nama, u.nama) as nama_penumpang, pl.email as email_penumpang, pl.no_telp as no_telp_penumpang
+                COALESCE(pl.nama, u.nama) as nama_penumpang, pl.email as email_penumpang, pl.no_telp as no_telp_penumpang,
+                t.tujuan as tiket_tujuan, t.tanggal_berangkat as tiket_tanggal, t.jam_berangkat as tiket_jam,
+                t.harga as tiket_harga, t.is_full as tiket_is_full, t.status_perjalanan as tiket_status_perjalanan
              FROM pemesanans p
              LEFT JOIN armada a ON p.armada_id = a.id
              LEFT JOIN users u ON p.user_id = u.id
              LEFT JOIN pelanggan pl ON pl.user_id = u.id AND pl.is_deleted = 0
+             LEFT JOIN tikets t ON p.tiket_id = t.id
              WHERE p.id = ? AND p.is_deleted = 0",
             [$id]
         );
@@ -104,11 +133,14 @@ class PemesananService
         $row = $this->db->fetchOne(
             "SELECT p.*, 
                 a.nama_armada, a.plat_nomor, a.tipe_seat, a.jumlah_seat, a.status as armada_status,
-                COALESCE(pl.nama, u.nama) as nama_penumpang, pl.email as email_penumpang, pl.no_telp as no_telp_penumpang
+                COALESCE(pl.nama, u.nama) as nama_penumpang, pl.email as email_penumpang, pl.no_telp as no_telp_penumpang,
+                t.tujuan as tiket_tujuan, t.tanggal_berangkat as tiket_tanggal, t.jam_berangkat as tiket_jam,
+                t.harga as tiket_harga, t.is_full as tiket_is_full, t.status_perjalanan as tiket_status_perjalanan
              FROM pemesanans p
              LEFT JOIN armada a ON p.armada_id = a.id
              LEFT JOIN users u ON p.user_id = u.id
              LEFT JOIN pelanggan pl ON pl.user_id = u.id AND pl.is_deleted = 0
+             LEFT JOIN tikets t ON p.tiket_id = t.id
              WHERE p.midtrans_order_id = ? AND p.is_deleted = 0",
             [$orderId]
         );

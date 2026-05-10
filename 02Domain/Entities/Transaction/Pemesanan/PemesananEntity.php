@@ -64,6 +64,9 @@ class PemesananEntity extends AuditableEntity
     #[Ignore]
     private ?UserEntity $user = null;
 
+    #[Ignore]
+    private ?\Domain\Entities\Transaction\Tiket\TiketEntity $tiket = null;
+
     // Getters
     public function getArmadaId(): int
     {
@@ -120,6 +123,10 @@ class PemesananEntity extends AuditableEntity
     public function getUser(): ?UserEntity
     {
         return $this->user;
+    }
+    public function getTiket(): ?\Domain\Entities\Transaction\Tiket\TiketEntity
+    {
+        return $this->tiket;
     }
 
     // Setters
@@ -178,6 +185,10 @@ class PemesananEntity extends AuditableEntity
     public function setUser(?UserEntity $user): void
     {
         $this->user = $user;
+    }
+    public function setTiket(?\Domain\Entities\Transaction\Tiket\TiketEntity $tiket): void
+    {
+        $this->tiket = $tiket;
     }
 
     // Domain methods

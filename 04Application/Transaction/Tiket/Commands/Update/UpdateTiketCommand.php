@@ -15,7 +15,7 @@ class UpdateTiketCommand
     {
         $entity = $this->service->getById($req->id);
         if (!$entity) return new UpdateTiketResponse(false, 'Tiket tidak ditemukan.');
-        $entity->update($req->tujuan, $req->tanggalBerangkat, $req->jamBerangkat, $req->harga, $req->isFull, $actorId);
+        $entity->update($req->tujuan, $req->tanggalBerangkat, $req->jamBerangkat, $req->harga, $req->isFull, $req->statusPerjalanan, $actorId);
         $entity->setArmadaId($req->armadaId);
         $this->service->update($entity);
         return new UpdateTiketResponse(true, 'Tiket berhasil diperbarui.');

@@ -10,6 +10,7 @@ use Base\Schema\Attributes\Column;
 use Base\Schema\Attributes\ForeignKey;
 use Base\Schema\Attributes\Ignore;
 use Base\Schema\Attributes\Table;
+use Base\Tiket\Enums\StatusPerjalanan;
 
 #[Table(
     name: 'tikets',
@@ -39,6 +40,9 @@ class TiketEntity extends AuditableEntity
 
     #[Column(type: 'tinyint', length: 1, nullable: false, default: true)]
     private bool $isFull = true;
+
+    #[Column(type: 'enum', nullable: false, enumClass: StatusPerjalanan::class)]
+    private string $statusPerjalanan = 'berlangsung';
 
     // ------------------------------------------------------------------
     // Join-fields
@@ -81,6 +85,11 @@ class TiketEntity extends AuditableEntity
         return $this->isFull;
     }
 
+    public function getStatusPerjalanan(): string
+    {
+        return $this->statusPerjalanan;
+    }
+
     public function getArmada(): ?ArmadaEntity
     {
         return $this->armada;
@@ -120,6 +129,11 @@ class TiketEntity extends AuditableEntity
         $this->isFull = $v;
     }
 
+    public function setStatusPerjalanan(string $v): void
+    {
+        $this->statusPerjalanan = $v;
+    }
+
     public function setArmada(?ArmadaEntity $armada): void
     {
         $this->armada = $armada;
@@ -145,6 +159,7 @@ class TiketEntity extends AuditableEntity
         $entity->setJamBerangkat($jamBerangkat);
         $entity->setHarga($harga);
         $entity->setIsFull(true);
+        $entity->setStatusPerjalanan('berlangsung');
 
         $entity->markCreated($createdBy);
 
@@ -157,6 +172,7 @@ class TiketEntity extends AuditableEntity
         ?string $jamBerangkat,
         ?float $harga,
         bool $isFull,
+        string $statusPerjalanan = 'berlangsung',
         ?int $updatedBy = null
     ): void {
         $this->setTujuan($tujuan);
@@ -164,7 +180,13 @@ class TiketEntity extends AuditableEntity
         $this->setJamBerangkat($jamBerangkat);
         $this->setHarga($harga);
         $this->setIsFull($isFull);
+        $this->setStatusPerjalanan($statusPerjalanan);
 
         $this->markUpdated($updatedBy);
+    }
+
+    public function isPerjalananSelesai(): bool
+    {
+        return $this->statusPerjalanan === 'selesai';
     }
 }

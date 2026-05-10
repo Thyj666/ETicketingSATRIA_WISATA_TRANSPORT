@@ -22,6 +22,7 @@ class TiketService
         $e->setJamBerangkat($row['jam_berangkat'] ?? null);
         $e->setHarga(isset($row['harga']) ? (float) $row['harga'] : null);
         $e->setIsFull((bool)($row['is_full'] ?? 1));
+        $e->setStatusPerjalanan($row['status_perjalanan'] ?? 'berlangsung');
         $e->setIsDeleted((bool)($row['is_deleted'] ?? 0));
         $e->setCreatedAt($row['created_at'] ?? '');
         $e->setUpdatedAt($row['updated_at'] ?? '');
@@ -38,6 +39,44 @@ class TiketService
         }
 
         return $e;
+    }
+
+    /**
+     * Cek apakah armada masih memiliki tiket aktif (status_perjalanan = 'berlangsung')
+     */
+    public function hasActiveTicket(int $armadaId): bool
+    {
+        $row = $this->db->fetchOne(
+            "SELECT id FROM tikets WHERE armada_id = ? AND status_perjalanan = 'berlangsung' AND is_deleted = 0 LIMIT 1",
+            [$armadaId]
+        );
+        return $row !== null;
+    }
+
+    /**
+     * Ambil tiket aktif (berlangsung) untuk armada tertentu
+     */
+    public function getActiveTicketByArmada(int $armadaId): ?TiketEntity
+    {
+        $row = $this->db->fetchOne(
+            "SELECT t.*, a.nama_armada, a.plat_nomor, a.tipe_seat, a.jumlah_seat, a.status as armada_status
+             FROM tikets t LEFT JOIN armada a ON t.armada_id = a.id
+             WHERE t.armada_id = ? AND t.status_perjalanan = 'berlangsung' AND t.is_deleted = 0
+             LIMIT 1",
+            [$armadaId]
+        );
+        return $row ? $this->mapRow($row) : null;
+    }
+
+    /**
+     * Dapatkan daftar armada_id yang masih memiliki tiket berlangsung
+     */
+    public function getArmadaIdsWithActiveTicket(): array
+    {
+        $rows = $this->db->fetchAll(
+            "SELECT DISTINCT armada_id FROM tikets WHERE status_perjalanan = 'berlangsung' AND is_deleted = 0"
+        );
+        return array_column($rows, 'armada_id');
     }
 
     public function getAll(int $armadaId = 0, string $search = '', string $tujuan = '', string $tanggal = ''): array
@@ -93,8 +132,8 @@ class TiketService
     public function save(TiketEntity $e): int
     {
         $this->db->execute(
-            "INSERT INTO tikets (armada_id, tujuan, tanggal_berangkat, jam_berangkat, harga, is_full, is_deleted, created_by, created_at)
-             VALUES (?,?,?,?,?,0,0,?,NOW())",
+            "INSERT INTO tikets (armada_id, tujuan, tanggal_berangkat, jam_berangkat, harga, is_full, status_perjalanan, is_deleted, created_by, created_at)
+             VALUES (?,?,?,?,?,0,'berlangsung',0,?,NOW())",
             [$e->getArmadaId(), $e->getTujuan(), $e->getTanggalBerangkat(), $e->getJamBerangkat(), $e->getHarga(), $e->getCreatedBy()]
         );
         return $this->db->lastInsertId();
@@ -103,9 +142,9 @@ class TiketService
     public function update(TiketEntity $e): bool
     {
         return $this->db->execute(
-            "UPDATE tikets SET armada_id=?, tujuan=?, tanggal_berangkat=?, jam_berangkat=?, harga=?, is_full=?, updated_by=?, updated_at=NOW()
+            "UPDATE tikets SET armada_id=?, tujuan=?, tanggal_berangkat=?, jam_berangkat=?, harga=?, is_full=?, status_perjalanan=?, updated_by=?, updated_at=NOW()
              WHERE id=? AND is_deleted=0",
-            [$e->getArmadaId(), $e->getTujuan(), $e->getTanggalBerangkat(), $e->getJamBerangkat(), $e->getHarga(), $e->getIsFull() ? 1 : 0, $e->getUpdatedBy(), $e->getId()]
+            [$e->getArmadaId(), $e->getTujuan(), $e->getTanggalBerangkat(), $e->getJamBerangkat(), $e->getHarga(), $e->getIsFull() ? 1 : 0, $e->getStatusPerjalanan(), $e->getUpdatedBy(), $e->getId()]
         );
     }
 

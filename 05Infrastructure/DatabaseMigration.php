@@ -24,6 +24,15 @@ class DatabaseMigration
         foreach ($this->getEntityMigrations() as $name => $entityClass) {
             $this->runOne($name, $entityClass);
         }
+
+        // Alter migrations — tambah kolom baru ke tabel yang sudah ada
+        $this->runAlter(
+            '008_add_status_perjalanan_to_tikets',
+            "ALTER TABLE `tikets`
+             ADD COLUMN IF NOT EXISTS `status_perjalanan`
+             ENUM('berlangsung','selesai') NOT NULL DEFAULT 'berlangsung'
+             AFTER `is_full`"
+        );
     }
 
     private function getEntityMigrations(): array
@@ -103,5 +112,35 @@ class DatabaseMigration
                 `executed_at` DATETIME     NOT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         ");
+    }
+
+    private function runAlter(string $name, string $sql): void
+    {
+        $done = $this->db->fetchOne(
+            'SELECT id FROM _migrations WHERE name = ? LIMIT 1',
+            [$name]
+        );
+        if ($done) return;
+
+        try {
+            $this->db->beginTransaction();
+            $this->db->getPdo()->exec($sql);
+            $this->db->execute(
+                'INSERT INTO _migrations (name, executed_at) VALUES (?, NOW())',
+                [$name]
+            );
+            $this->db->commit();
+        } catch (\Throwable $e) {
+            $this->db->rollback();
+            // Jika kolom sudah ada (MySQL 5.7 tidak support IF NOT EXISTS), abaikan error
+            if (str_contains($e->getMessage(), 'Duplicate column name')) {
+                $this->db->execute(
+                    'INSERT IGNORE INTO _migrations (name, executed_at) VALUES (?, NOW())',
+                    [$name]
+                );
+            } else {
+                error_log("[Migration] FAILED ALTER {$name}: " . $e->getMessage());
+            }
+        }
     }
 }

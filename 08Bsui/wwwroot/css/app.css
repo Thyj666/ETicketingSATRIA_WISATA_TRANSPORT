@@ -2432,6 +2432,9 @@ textarea.form-input { resize: vertical; min-height: 90px; }
 }
 
 .ticket-full { opacity: .65; }
+.ticket-selesai { opacity: .5; filter: grayscale(.4); }
+
+.ticket-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
 
 .ticket-status-badge {
   display: inline-flex;
@@ -2441,10 +2444,13 @@ textarea.form-input { resize: vertical; min-height: 90px; }
   font-weight: 700;
   padding: 3px 10px;
   border-radius: 20px;
-  margin-bottom: 10px;
 }
-.badge-available { background: var(--green-dim); color: var(--green); }
-.badge-full      { background: var(--red-dim);   color: var(--red); }
+.badge-available    { background: var(--green-dim); color: var(--green); }
+.badge-full         { background: var(--red-dim);   color: var(--red); }
+.badge-berlangsung  { background: rgba(251,191,36,.15); color: #f59e0b; }
+.badge-selesai      { background: rgba(99,102,241,.15);  color: #6366f1; }
+
+.form-hint { font-size: .75rem; color: var(--text-muted); margin-top: 4px; display: block; }
 
 .ticket-origin, .ticket-dest { flex: 1; }
 .ticket-time { font-size: .75rem; color: rgba(255,255,255,.55); margin-top: 4px; }

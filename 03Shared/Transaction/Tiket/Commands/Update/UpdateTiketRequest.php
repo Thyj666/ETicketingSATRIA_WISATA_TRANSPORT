@@ -14,5 +14,6 @@ class UpdateTiketRequest
         public readonly ?string $jamBerangkat = null,
         public readonly ?float $harga = null,
         public readonly bool $isFull = true,
+        public readonly string $statusPerjalanan = 'berlangsung',
     ) {}
 }

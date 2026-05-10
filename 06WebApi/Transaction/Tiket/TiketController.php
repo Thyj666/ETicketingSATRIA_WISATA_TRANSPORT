@@ -39,7 +39,10 @@ class TiketController
         $tujuan  = $_GET['tujuan']  ?? '';
         $tanggal = $_GET['tanggal'] ?? '';
         $list    = $this->getList->execute(new GetTiketByListRequest(0, $search, $tujuan, $tanggal))->data;
-        $armadas = $this->getArmadaList->execute(new GetArmadaByListRequest('', 'tersedia'))->data;
+        // Hanya armada yang TIDAK punya tiket berlangsung boleh dipilih saat create
+        $allArmadas    = $this->getArmadaList->execute(new GetArmadaByListRequest('', 'tersedia'))->data;
+        $activeArmadaIds = $this->tiketService->getArmadaIdsWithActiveTicket();
+        $armadas = array_filter($allArmadas, fn($a) => !in_array($a->getId(), $activeArmadaIds));
         $role    = Auth::user()['role'] ?? '';
         $flash   = $_SESSION['flash'] ?? null;
         unset($_SESSION['flash']);
@@ -75,9 +78,12 @@ class TiketController
         $jamBerangkat     = trim($_POST['jam_berangkat'] ?? '') ?: null;
         $harga            = (float)($_POST['harga'] ?? 0);
         $isFull           = isset($_POST['is_full']) && $_POST['is_full'] === '1';
+        $statusPerjalanan = in_array($_POST['status_perjalanan'] ?? '', ['berlangsung', 'selesai'])
+                            ? $_POST['status_perjalanan']
+                            : 'berlangsung';
         $actorId          = Auth::id();
 
-        $req = new UpdateTiketRequest($id, $armadaId, $tujuan, $tanggalBerangkat, $jamBerangkat, $harga, $isFull);
+        $req = new UpdateTiketRequest($id, $armadaId, $tujuan, $tanggalBerangkat, $jamBerangkat, $harga, $isFull, $statusPerjalanan);
         $res = $this->updateCmd->execute($req, $actorId);
         $_SESSION['flash'] = ['type' => $res->success ? 'success' : 'danger', 'msg' => $res->message];
         header('Location: ' . url('/transaksi/tiket'));
@@ -108,16 +114,17 @@ class TiketController
             return;
         }
         echo json_encode([
-            'id'                => $d->getId(),
-            'armada_id'         => $d->getArmadaId(),
-            'tujuan'            => $d->getTujuan(),
-            'tanggal_berangkat' => $d->getTanggalBerangkat(),
-            'jam_berangkat'     => $d->getJamBerangkat(),
-            'harga'             => $d->getHarga(),
-            'is_full'           => $d->getIsFull(),
-            'nama_armada'       => $d->getArmada()?->getNamaArmada(),
-            'jumlah_seat'       => $d->getArmada()?->getJumlahSeat(),
-            'tipe_seat'         => $d->getArmada()?->getTipeSeat(),
+            'id'                 => $d->getId(),
+            'armada_id'          => $d->getArmadaId(),
+            'tujuan'             => $d->getTujuan(),
+            'tanggal_berangkat'  => $d->getTanggalBerangkat(),
+            'jam_berangkat'      => $d->getJamBerangkat(),
+            'harga'              => $d->getHarga(),
+            'is_full'            => $d->getIsFull(),
+            'status_perjalanan'  => $d->getStatusPerjalanan(),
+            'nama_armada'        => $d->getArmada()?->getNamaArmada(),
+            'jumlah_seat'        => $d->getArmada()?->getJumlahSeat(),
+            'tipe_seat'          => $d->getArmada()?->getTipeSeat(),
         ]);
     }
 

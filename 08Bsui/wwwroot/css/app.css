@@ -1319,3 +1319,210 @@ textarea.form-control { resize: vertical; min-height: 90px; }
   margin-top: 8px;
   text-transform: capitalize;
 }
+/* ================================================================
+   PROFILE LAYOUT (NEW)
+   ================================================================ */
+.profile-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.card-block {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 28px;
+}
+
+.profile-avatar-card {
+  text-align: center;
+}
+
+.profile-avatar-big {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: var(--amber);
+  color: var(--navy);
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.profile-role-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 20px;
+  background: var(--navy);
+  color: var(--white);
+  font-size: .72rem;
+  font-weight: 600;
+  margin: 4px 0 8px;
+}
+
+.profile-username {
+  color: var(--text-muted);
+  font-size: .8rem;
+  margin-bottom: 16px;
+}
+
+.profile-info-row {
+  font-size: .82rem;
+  color: var(--text-secondary);
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+  text-align: left;
+}
+
+.profile-form-card { }
+
+.section-title-sm {
+  font-family: 'Sora', sans-serif;
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 16px;
+}
+
+.form-actions {
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ================================================================
+   BAYAR (PAYMENT) PAGE
+   ================================================================ */
+.bayar-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+.detail-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+
+.detail-row:last-child { border-bottom: none; }
+
+.detail-label {
+  color: var(--text-muted);
+  font-size: .84rem;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  font-size: .9rem;
+  text-align: right;
+}
+
+.detail-row-total .detail-label,
+.detail-row-total .detail-value { font-weight: 700; }
+
+.total-price {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.2rem;
+  color: var(--navy);
+}
+
+.bayar-info {
+  color: var(--text-secondary);
+  font-size: .88rem;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.bayar-note {
+  text-align: center;
+  font-size: .78rem;
+  color: var(--text-muted);
+  margin-top: 12px;
+}
+
+.bayar-status-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  color: var(--text-secondary);
+  font-size: .88rem;
+}
+
+@media (max-width: 900px) {
+  .bayar-layout { grid-template-columns: 1fr; }
+}
+
+/* ================================================================
+   LAPORAN TAB SWITCHER
+   ================================================================ */
+.tab-switcher {
+  display: flex;
+  background: var(--bg-subtle);
+  border-radius: var(--radius);
+  padding: 3px;
+  border: 1px solid var(--border);
+}
+
+.tab-btn {
+  padding: 6px 16px;
+  border-radius: calc(var(--radius) - 3px);
+  font-size: .84rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all .15s;
+}
+
+.tab-btn.active, .tab-btn:hover {
+  background: var(--white);
+  color: var(--navy);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ================================================================
+   MISC HELPERS
+   ================================================================ */
+.td-muted {
+  color: var(--text-muted);
+  font-size: .8rem;
+}
+
+.btn-success {
+  background: var(--green);
+  color: var(--white);
+  border: none;
+}
+
+.btn-success:hover {
+  background: #059669;
+}
+
+.alert-warning {
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: .88rem;
+}

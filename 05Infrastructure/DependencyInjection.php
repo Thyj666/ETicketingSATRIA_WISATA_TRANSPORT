@@ -357,7 +357,8 @@ class DependencyInjection
                 $this->make(\Client\Master\Admin\AdminService::class),
                 $this->make(\Client\Master\Pelanggan\PelangganService::class),
                 $this->make(\Client\Master\Pimpinan\PimpinanService::class),
-            );
+            )
+        );
         $this->bind(
             \WebApi\Master\Armada\ArmadaController::class,
             fn() => new \WebApi\Master\Armada\ArmadaController(

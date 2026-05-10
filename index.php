@@ -6,6 +6,26 @@ define('BASE_PATH', __DIR__);
 define('APP_VERSION', '1.0.0');
 define('APP_NAME', 'SATRIA WISATA TRANSPORT');
 
+// Load .env file jika ada
+$envFile = BASE_PATH . '/.env';
+if (file_exists($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if ($line === '' || str_starts_with($line, '#')) continue;
+        if (str_contains($line, '=')) {
+            [$key, $value] = explode('=', $line, 2);
+            $key   = trim($key);
+            $value = trim($value);
+            if (!getenv($key)) {
+                putenv("$key=$value");
+                $_ENV[$key]    = $value;
+                $_SERVER[$key] = $value;
+            }
+        }
+    }
+}
+
 // JWT secret key — ubah nilai ini di production (gunakan nilai acak yang panjang)
 define('JWT_SECRET', getenv('JWT_SECRET') ?: 'SATRIA_WISATA_TRANSPORT');
 
@@ -196,6 +216,7 @@ $routes = [
     'POST:/transaksi/pemesanan/create'     => ['PemesananController', 'create'],
     'GET:/transaksi/pemesanan/bayar'       => ['PemesananController', 'bayar'],
     'POST:/transaksi/pemesanan/notifikasi' => ['PemesananController', 'notifikasi'],
+    'GET:/transaksi/pemesanan/notifikasi'  => ['PemesananController', 'notifikasi'],  // Midtrans kadang GET ping
     'GET:/transaksi/pemesanan/status'      => ['PemesananController', 'statusPembayaran'],
 
     // Laporan (hanya role: admin & pimpinan)

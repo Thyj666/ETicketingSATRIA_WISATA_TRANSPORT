@@ -89,18 +89,28 @@ class PemesananController
         }
 
         $midtransClientKey = getenv('MIDTRANS_CLIENT_KEY') ?: '';
-        $isProduction      = (bool)(getenv('MIDTRANS_IS_PRODUCTION') ?: false);
+        $isProduction      = filter_var(getenv('MIDTRANS_IS_PRODUCTION'), FILTER_VALIDATE_BOOLEAN);
         require BASE_PATH . '/08Bsui/transaction/pemesanan/bayar.php';
     }
 
     public function notifikasi(): void
     {
-        // Midtrans webhook - no auth needed, verify signature
+        // Midtrans GET ping — balas 200 OK agar webhook URL terverifikasi
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            http_response_code(200);
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'ok', 'message' => 'Midtrans webhook endpoint aktif']);
+            exit;
+        }
+
+        // Midtrans webhook POST — no auth needed, verify signature
         $body = file_get_contents('php://input');
         $data = json_decode($body, true);
 
         if (!$data) {
             http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Invalid payload']);
             exit;
         }
 
@@ -114,12 +124,16 @@ class PemesananController
         $expectedSig = hash('sha512', $orderId . $statusCode . $grossAmt . $serverKey);
         if (!hash_equals($expectedSig, $signature)) {
             http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Invalid signature']);
             exit;
         }
 
         $pemesanan = $this->pemesananService->getByOrderId($orderId);
         if (!$pemesanan) {
             http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Order not found']);
             exit;
         }
 
@@ -128,14 +142,16 @@ class PemesananController
 
         $newStatus = match (true) {
             $transactionStatus === 'capture' && $fraudStatus === 'accept' => 'confirmed',
-            $transactionStatus === 'settlement' => 'confirmed',
-            $transactionStatus === 'pending' => 'pending',
-            in_array($transactionStatus, ['deny', 'expire', 'cancel']) => 'cancelled',
+            $transactionStatus === 'settlement'                           => 'confirmed',
+            $transactionStatus === 'pending'                              => 'pending',
+            in_array($transactionStatus, ['deny', 'expire', 'cancel'])   => 'cancelled',
             default => $pemesanan->getStatusPemesanan(),
         };
 
         $this->pemesananService->updateStatus($pemesanan->getId(), $newStatus, $transactionStatus);
+
         http_response_code(200);
+        header('Content-Type: application/json');
         echo json_encode(['status' => 'ok']);
     }
 
@@ -165,12 +181,18 @@ class PemesananController
     private function createMidtransToken(int $pemesananId, string $orderId, float $amount, int $userId): ?string
     {
         $serverKey    = getenv('MIDTRANS_SERVER_KEY') ?: '';
-        $isProduction = (bool)(getenv('MIDTRANS_IS_PRODUCTION') ?: false);
+        $isProduction = filter_var(getenv('MIDTRANS_IS_PRODUCTION'), FILTER_VALIDATE_BOOLEAN);
 
         if (!$serverKey) return null;
 
         $db   = \Infrastructure\AppDbContext::getInstance();
         $user = $db->fetchOne("SELECT nama, email, no_telp FROM users WHERE id=?", [$userId]);
+
+        $webhookUrl = rtrim(getenv('APP_URL') ?: (
+            (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http')
+            . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost')
+        ), '/');
+        $basePath = rtrim(getenv('APP_BASE_PATH') ?: '', '/');
 
         $payload = [
             'transaction_details' => [
@@ -181,6 +203,12 @@ class PemesananController
                 'first_name' => $user['nama'] ?? 'Penumpang',
                 'email'      => $user['email'] ?? '',
                 'phone'      => $user['no_telp'] ?? '',
+            ],
+            'callbacks' => [
+                'finish'       => $webhookUrl . $basePath . '/transaksi/pemesanan',
+                'unfinish'     => $webhookUrl . $basePath . '/transaksi/pemesanan/bayar?id=' . $pemesananId,
+                'error'        => $webhookUrl . $basePath . '/transaksi/pemesanan/bayar?id=' . $pemesananId,
+                'notification' => $webhookUrl . $basePath . '/transaksi/pemesanan/notifikasi',
             ],
         ];
 
@@ -202,9 +230,10 @@ class PemesananController
         ]);
 
         $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if (!$response) return null;
+        if (!$response || $httpCode !== 201) return null;
         $result = json_decode($response, true);
         return $result['token'] ?? null;
     }

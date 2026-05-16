@@ -39,10 +39,12 @@ class TiketController
         $tujuan  = $_GET['tujuan']  ?? '';
         $tanggal = $_GET['tanggal'] ?? '';
         $list    = $this->getList->execute(new GetTiketByListRequest(0, $search, $tujuan, $tanggal))->data;
-        // Hanya armada yang TIDAK punya tiket berlangsung boleh dipilih saat create
-        $allArmadas    = $this->getArmadaList->execute(new GetArmadaByListRequest('', 'tersedia'))->data;
+        // Untuk CREATE: hanya armada yang belum punya tiket berlangsung
+        $allArmadas      = $this->getArmadaList->execute(new GetArmadaByListRequest('', 'tersedia'))->data;
         $activeArmadaIds = $this->tiketService->getArmadaIdsWithActiveTicket();
-        $armadas = array_filter($allArmadas, fn($a) => !in_array($a->getId(), $activeArmadaIds));
+        $armadas         = array_filter($allArmadas, fn($a) => !in_array($a->getId(), $activeArmadaIds));
+        // Untuk EDIT: semua armada (tersedia + digunakan), agar armada yang sedang dipakai tiket tetap muncul
+        $allArmadasForEdit = $this->getArmadaList->execute(new GetArmadaByListRequest('', ''))->data;
         $role    = Auth::user()['role'] ?? '';
         $flash   = $_SESSION['flash'] ?? null;
         unset($_SESSION['flash']);
@@ -79,8 +81,8 @@ class TiketController
         $harga            = (float)($_POST['harga'] ?? 0);
         $isFull           = isset($_POST['is_full']) && $_POST['is_full'] === '1';
         $statusPerjalanan = in_array($_POST['status_perjalanan'] ?? '', ['berlangsung', 'selesai'])
-                            ? $_POST['status_perjalanan']
-                            : 'berlangsung';
+            ? $_POST['status_perjalanan']
+            : 'berlangsung';
         $actorId          = Auth::id();
 
         $req = new UpdateTiketRequest($id, $armadaId, $tujuan, $tanggalBerangkat, $jamBerangkat, $harga, $isFull, $statusPerjalanan);

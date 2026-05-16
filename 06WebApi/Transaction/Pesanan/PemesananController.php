@@ -64,7 +64,8 @@ class PemesananController
             exit;
         }
 
-        // Generate Midtrans Snap token
+        // Generate Midtrans Snap token (di development maupun production)
+        // Di development, status dikonfirmasi bypass lewat devKonfirmasi setelah popup Midtrans
         $snapToken = $this->createMidtransToken($res->id, $res->orderId, $res->totalHarga, $userId);
         if ($snapToken) {
             $this->pemesananService->updateMidtransToken($res->id, $snapToken);
@@ -90,6 +91,7 @@ class PemesananController
 
         $midtransClientKey = getenv('MIDTRANS_CLIENT_KEY') ?: '';
         $isProduction      = filter_var(getenv('MIDTRANS_IS_PRODUCTION'), FILTER_VALIDATE_BOOLEAN);
+        $isDevelopment     = $this->isDevelopmentMode();
         require BASE_PATH . '/08Bsui/transaction/pemesanan/bayar.php';
     }
 
@@ -100,6 +102,14 @@ class PemesananController
             http_response_code(200);
             header('Content-Type: application/json');
             echo json_encode(['status' => 'ok', 'message' => 'Midtrans webhook endpoint aktif']);
+            exit;
+        }
+
+        // Mode development: webhook tidak digunakan (pembayaran bypass di create())
+        if ($this->isDevelopmentMode()) {
+            http_response_code(200);
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'ok', 'message' => 'Development mode — webhook diabaikan']);
             exit;
         }
 
@@ -155,6 +165,39 @@ class PemesananController
         echo json_encode(['status' => 'ok']);
     }
 
+    /**
+     * Endpoint khusus mode development:
+     * Mengkonfirmasi pembayaran langsung tanpa validasi Midtrans.
+     * Akan mengembalikan 403 jika diakses di mode production.
+     */
+    public function devKonfirmasi(): void
+    {
+        Auth::requireAuth();
+
+        // Blokir akses jika bukan mode development
+        if (!$this->isDevelopmentMode()) {
+            http_response_code(403);
+            $_SESSION['flash'] = ['type' => 'danger', 'msg' => 'Endpoint ini hanya tersedia di mode development.'];
+            header('Location: ' . url('/transaksi/pemesanan'));
+            exit;
+        }
+
+        $id  = (int)($_POST['id'] ?? 0);
+        $res = $this->getById->execute(new GetPemesananByIdRequest($id));
+        $d   = $res->data;
+
+        if (!$d || $d->getUserId() !== Auth::id()) {
+            $_SESSION['flash'] = ['type' => 'danger', 'msg' => 'Pemesanan tidak ditemukan.'];
+            header('Location: ' . url('/transaksi/pemesanan'));
+            exit;
+        }
+
+        $this->pemesananService->updateStatus($d->getId(), 'confirmed', 'development_bypass');
+        $_SESSION['flash'] = ['type' => 'success', 'msg' => '[DEV] Pembayaran berhasil dikonfirmasi (mode development).'];
+        header('Location: ' . url('/transaksi/pemesanan'));
+        exit;
+    }
+
     public function statusPembayaran(): void
     {
         Auth::requireAuth();
@@ -177,6 +220,17 @@ class PemesananController
     // ------------------------------------------------------------------
     // Private helpers
     // ------------------------------------------------------------------
+
+    /**
+     * Mengembalikan true jika APP_ENV=development.
+     * Mode development:  pembayaran bypass (tidak perlu Midtrans).
+     * Mode production :  pembayaran wajib diverifikasi via Midtrans.
+     */
+    private function isDevelopmentMode(): bool
+    {
+        $env = strtolower(trim(getenv('APP_ENV') ?: 'production'));
+        return $env === 'development';
+    }
 
     private function createMidtransToken(int $pemesananId, string $orderId, float $amount, int $userId): ?string
     {

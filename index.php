@@ -69,11 +69,13 @@ spl_autoload_register(function (string $class): void {
 require_once BASE_PATH . '/05Infrastructure/AppDbContext.php';
 require_once BASE_PATH . '/05Infrastructure/DatabaseMigration.php';
 require_once BASE_PATH . '/05Infrastructure/DependencyInjection.php';
+require_once BASE_PATH . '/05Infrastructure/TicketScheduler.php';
 
 use Infrastructure\AppDbContext;
 use Infrastructure\DatabaseMigration;
 use Infrastructure\Seeders\DatabaseSeeder;
 use Infrastructure\DependencyInjection;
+use Infrastructure\TicketScheduler;
 
 // Run auto migration
 $db = AppDbContext::getInstance();
@@ -84,6 +86,10 @@ $migration->run();
 $db = AppDbContext::getInstance();
 $seeder = new DatabaseSeeder($db);
 $seeder->run();
+
+// Pseudo-cronjob lokal: jalankan otomatis setiap 60 detik saat ada request
+// Tidak perlu crontab — cocok untuk development lokal maupun production ringan
+(new TicketScheduler($db, 60))->runIfDue();
 
 // Dependency Injection
 $container = DependencyInjection::build($db);
@@ -219,10 +225,14 @@ $routes = [
     'POST:/transaksi/pemesanan/notifikasi' => ['PemesananController', 'notifikasi'],
     'GET:/transaksi/pemesanan/notifikasi'  => ['PemesananController', 'notifikasi'],  // Midtrans kadang GET ping
     'GET:/transaksi/pemesanan/status'      => ['PemesananController', 'statusPembayaran'],
+    'POST:/transaksi/pemesanan/dev-konfirmasi' => ['PemesananController', 'devKonfirmasi'], // Hanya aktif di mode development
 
     // Laporan (hanya role: admin & pimpinan)
     'GET:/transaksi/laporan'               => ['LaporanController', 'index'],
     'GET:/transaksi/laporan/export'        => ['LaporanController', 'export'],
+
+    // Cron job HTTP endpoint (diproteksi CRON_SECRET)
+    'GET:/cron/tiket'                      => ['CronController', 'run'],
 
     // Profile (semua user yang login)
     'GET:/profile'                         => ['ProfileController', 'index'],
@@ -285,6 +295,7 @@ $controllerMap = [
     'ArmadaController'    => \WebApi\Master\Armada\ArmadaController::class,
     'TiketController'     => \WebApi\Transaction\Tiket\TiketController::class,
     'PemesananController' => \WebApi\Transaction\Pemesanan\PemesananController::class,
+    'CronController'      => \WebApi\CronController::class,
 ];
 
 $className = $controllerMap[$controllerName] ?? null;

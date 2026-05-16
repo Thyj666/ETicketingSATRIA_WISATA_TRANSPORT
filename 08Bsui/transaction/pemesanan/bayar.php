@@ -59,6 +59,12 @@ $total  = 'Rp ' . number_format($data->getTotalHarga(), 0, ',', '.');
         <!-- Panel Bayar -->
         <div class="bayar-panel card-block">
             <h3 class="section-title-sm">💳 Metode Pembayaran</h3>
+            <?php if ($isDevelopment): ?>
+                <!-- Mode Development: tampilkan UI Midtrans tapi status bypass -->
+                <div class="alert alert-info" style="margin-bottom:1rem;">
+                    <strong>⚙️ Mode Development</strong> — Pembayaran tidak diverifikasi ke server Midtrans. Status langsung dikonfirmasi setelah popup ditutup.
+                </div>
+            <?php endif; ?>
             <?php if ($data->getMidtransToken()): ?>
                 <p class="bayar-info">Klik tombol di bawah untuk melanjutkan ke halaman pembayaran Midtrans. Anda dapat membayar melalui transfer bank, QRIS, atau dompet digital.</p>
                 <button id="pay-btn" class="btn btn-primary btn-full btn-lg">Bayar Sekarang</button>
@@ -86,20 +92,54 @@ $total  = 'Rp ' . number_format($data->getTotalHarga(), 0, ',', '.');
     <script src="https://app<?= $isProduction ? '' : '.sandbox' ?>.midtrans.com/snap/snap.js"
         data-client-key="<?= htmlspecialchars($midtransClientKey) ?>"></script>
     <script>
+        const isDevelopment = <?= $isDevelopment ? 'true' : 'false' ?>;
+        const devConfirmUrl = '<?= url('/transaksi/pemesanan/dev-konfirmasi') ?>';
+        const pemesananId = <?= (int)$data->getId() ?>;
+
         document.getElementById('pay-btn').addEventListener('click', function() {
             snap.pay('<?= htmlspecialchars($data->getMidtransToken()) ?>', {
                 onSuccess: function(result) {
                     showToast('Pembayaran berhasil! ✓', 'success');
                     document.getElementById('bayar-status-check').style.display = 'flex';
-                    setTimeout(() => {
-                        window.location.href = '<?= url('/transaksi/pemesanan') ?>';
-                    }, 2000);
+                    if (isDevelopment) {
+                        // Dev mode: bypass — langsung konfirmasi tanpa menunggu webhook Midtrans
+                        fetch(devConfirmUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: 'id=' + pemesananId
+                        }).finally(() => {
+                            setTimeout(() => {
+                                window.location.href = '<?= url('/transaksi/pemesanan') ?>';
+                            }, 1500);
+                        });
+                    } else {
+                        setTimeout(() => {
+                            window.location.href = '<?= url('/transaksi/pemesanan') ?>';
+                        }, 2000);
+                    }
                 },
                 onPending: function(result) {
                     showToast('Menunggu konfirmasi pembayaran…', 'info');
-                    setTimeout(() => {
-                        window.location.href = '<?= url('/transaksi/pemesanan') ?>';
-                    }, 2000);
+                    if (isDevelopment) {
+                        // Dev mode: pending pun langsung dikonfirmasi
+                        fetch(devConfirmUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: 'id=' + pemesananId
+                        }).finally(() => {
+                            setTimeout(() => {
+                                window.location.href = '<?= url('/transaksi/pemesanan') ?>';
+                            }, 1500);
+                        });
+                    } else {
+                        setTimeout(() => {
+                            window.location.href = '<?= url('/transaksi/pemesanan') ?>';
+                        }, 2000);
+                    }
                 },
                 onError: function(result) {
                     showToast('Pembayaran gagal. Silakan coba lagi.', 'error');

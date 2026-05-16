@@ -186,8 +186,13 @@ class PemesananController
         if (!$serverKey) return null;
 
         $db   = \Infrastructure\AppDbContext::getInstance();
-        $user = $db->fetchOne("SELECT nama, email, no_telp FROM users WHERE id=?", [$userId]);
-
+        $user = $db->fetchOne(
+            "SELECT u.nama, p.email, p.no_telp
+            FROM users u
+            LEFT JOIN pelanggan p ON p.user_id = u.id
+            WHERE u.id = ?",
+            [$userId]
+        );
         $webhookUrl = rtrim(getenv('APP_URL') ?: (
             (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http')
             . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost')
@@ -217,6 +222,7 @@ class PemesananController
             : 'https://app.sandbox.midtrans.com/snap/v1/transactions';
 
         $ch = curl_init($url);
+
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
@@ -225,6 +231,7 @@ class PemesananController
                 'Content-Type: application/json',
                 'Accept: application/json',
                 'Authorization: Basic ' . base64_encode($serverKey . ':'),
+                'ngrok-skip-browser-warning: true',
             ],
             CURLOPT_TIMEOUT        => 10,
         ]);

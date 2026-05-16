@@ -98,6 +98,7 @@ require_once BASE_PATH . '/01Base/Auth/JwtHelper.php';
 require_once BASE_PATH . '/01Base/Auth/Auth.php';
 \Base\Auth\Auth::init(JWT_SECRET);
 
+header("ngrok-skip-browser-warning: true");
 /**
  * Helper function untuk mendapatkan base path aplikasi
  */

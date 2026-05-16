@@ -219,7 +219,7 @@ require BASE_PATH . '/08Bsui/layouts/app.php';
                     <div class="form-group">
                         <label class="form-label">Armada</label>
                         <select name="armada_id" id="edit-armada" class="form-input" required>
-                            <?php foreach ($armadas as $a): ?>
+                            <?php foreach ($armadasForEdit as $a): ?>
                                 <option value="<?= $a->getId() ?>"><?= htmlspecialchars($a->getNamaArmada()) ?></option>
                             <?php endforeach; ?>
                         </select>

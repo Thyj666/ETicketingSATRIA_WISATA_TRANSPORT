@@ -44,7 +44,7 @@ class TiketController
         $activeArmadaIds = $this->tiketService->getArmadaIdsWithActiveTicket();
         $armadas         = array_filter($allArmadas, fn($a) => !in_array($a->getId(), $activeArmadaIds));
         // Untuk EDIT: semua armada (tersedia + digunakan), agar armada yang sedang dipakai tiket tetap muncul
-        $allArmadasForEdit = $this->getArmadaList->execute(new GetArmadaByListRequest('', ''))->data;
+        $armadasForEdit = $this->getArmadaList->execute(new GetArmadaByListRequest('', ''))->data;
         $role    = Auth::user()['role'] ?? '';
         $flash   = $_SESSION['flash'] ?? null;
         unset($_SESSION['flash']);
